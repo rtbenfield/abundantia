@@ -1,0 +1,18 @@
+query Loan($id: ID!) {
+  loan(where: { id: $id }) {
+    id
+    loanAmount
+    name
+    payments(orderBy: date_DESC) {
+      date
+      id
+      interest
+      note
+      principal
+    }
+    periodInterestRate
+    periods
+    periodType
+    startDate
+  }
+}

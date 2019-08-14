@@ -1,0 +1,6 @@
+query Loans {
+  loans {
+    id
+    name
+  }
+}

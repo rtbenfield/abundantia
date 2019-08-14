@@ -1,0 +1,5 @@
+mutation CreateLoan($loan: LoanCreateInput!) {
+  createLoan(data: $loan) {
+    id
+  }
+}

@@ -1,0 +1,12 @@
+query Scenarios($loanId: ID!) {
+  scenarios(where: { loan: { id: $loanId } }) {
+    additionalPayments {
+      from
+      id
+      principalAmount
+      to
+    }
+    id
+    name
+  }
+}

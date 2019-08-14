@@ -1,0 +1,5 @@
+mutation RemoveScenario($id: ID!) {
+  deleteScenario(where: { id: $id }) {
+    id
+  }
+}

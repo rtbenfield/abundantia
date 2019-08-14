@@ -1,0 +1,5 @@
+mutation DeleteLoan($id: ID!) {
+  deleteLoan(where: { id: $id }) {
+    id
+  }
+}

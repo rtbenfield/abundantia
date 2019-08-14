@@ -1,0 +1,3 @@
+endpoint: https://loan-rover-8d8400b445.herokuapp.com/rtbenfield_gmail_com/dev
+datamodel: datamodel.prisma
+databaseType: relational

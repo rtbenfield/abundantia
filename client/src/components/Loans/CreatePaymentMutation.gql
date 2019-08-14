@@ -1,0 +1,18 @@
+mutation CreatePayment($id: ID!, $payment: PaymentCreateWithoutLoanInput!) {
+  updateLoan(data: { payments: { create: [$payment] } }, where: { id: $id }) {
+    id
+    loanAmount
+    name
+    payments(orderBy: date_DESC) {
+      date
+      id
+      interest
+      note
+      principal
+    }
+    periodInterestRate
+    periods
+    periodType
+    startDate
+  }
+}
