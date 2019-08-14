@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "parcel build ./client/src/index.html --out-dir ./client/dist",
+    "start": "node ./server/index.js",
     "postinstall": "cd ./client && yarn install && cd ../server && yarn install"
   },
   "devDependencies": {
