@@ -4,7 +4,8 @@
   "main": "./server/index.js",
   "license": "MIT",
   "scripts": {
-    "build": "parcel build ./client/src/index.html --out-dir ./client/dist"
+    "build": "parcel build ./client/src/index.html --out-dir ./client/dist",
+    "postinstall": "cd ./client && yarn install && cd ../server && yarn install"
   },
   "devDependencies": {
     "prettier": "1.18.2"
