@@ -1,8 +1,11 @@
 {
   "name": "loan-rover",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "./server/index.js",
   "license": "MIT",
+  "scripts": {
+    "build": "parcel build ./client/src/index.html --out-dir ./client/dist"
+  },
   "devDependencies": {
     "prettier": "1.18.2"
   }
