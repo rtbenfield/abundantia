@@ -25,6 +25,7 @@ const Login: React.FunctionComponent = () => {
               userContext.setUser({
                 authToken: googleUser.getAuthResponse().id_token,
                 email: profile.getEmail(),
+                id: profile.getId(),
                 imageUrl: profile.getImageUrl(),
                 name: profile.getName(),
               });

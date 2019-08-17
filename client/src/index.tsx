@@ -1,10 +1,13 @@
 import { createMuiTheme, CssBaseline, MuiThemeProvider } from "@material-ui/core";
+import * as Sentry from "@sentry/browser";
 import * as React from "react";
 import { render } from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import { ApolloProvider } from "./apollo";
 import Layout from "./components/Layout";
 import { UserProvider } from "./contexts/userContext";
+
+Sentry.init({ dsn: process.env.SENTRY_DSN });
 
 const darkModePreferred = window.matchMedia("(prefers-color-scheme: dark)").matches;
 const theme = createMuiTheme({

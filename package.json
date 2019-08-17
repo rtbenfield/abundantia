@@ -11,8 +11,5 @@
   "devDependencies": {
     "parcel": "^1.12.3",
     "prettier": "1.18.2"
-  },
-  "dependencies": {
-    "@sentry/node": "5.6.1"
   }
 }

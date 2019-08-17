@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/browser";
 import * as React from "react";
 
 export interface UserContext {
@@ -11,6 +12,7 @@ export interface UserContext {
 export interface UserInfo {
   authToken: string;
   email: string;
+  id: string;
   imageUrl?: string;
   name: string;
 }
@@ -23,7 +25,11 @@ export const UserProvider: React.FunctionComponent = ({ children }) => {
     const userJson = localStorage.getItem("user");
     if (userJson) {
       try {
-        const user = JSON.parse(userJson);
+        const user = JSON.parse(userJson) as UserInfo;
+        Sentry.setUser({
+          email: user.email,
+          id: user.id,
+        });
         return user;
       } finally {
       }
@@ -41,6 +47,10 @@ export const UserProvider: React.FunctionComponent = ({ children }) => {
       isAuthenticated: !!user,
       setUser: user => {
         setUser(user);
+        Sentry.setUser({
+          email: user.email,
+          id: user.id,
+        });
         localStorage.setItem("user", JSON.stringify(user));
       },
       user,
