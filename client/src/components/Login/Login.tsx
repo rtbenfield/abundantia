@@ -17,7 +17,7 @@ const Login: React.FunctionComponent = () => {
       </DialogContent>
       <DialogActions>
         <GoogleLogin
-          clientId="181580551707-ssj5hjp3vv9p14o8suoai4uoa67f6gh7.apps.googleusercontent.com"
+          clientId={process.env.GOOGLE_CLIENT_ID || ""}
           buttonText="Login"
           onSuccess={googleUser => {
             if ("getBasicProfile" in googleUser) {

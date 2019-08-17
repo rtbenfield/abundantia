@@ -1,3 +1,4 @@
+const Sentry = require("@sentry/node");
 const { OAuth2Client } = require("google-auth-library");
 const express = require("express");
 const fs = require("fs");
@@ -12,11 +13,15 @@ const PRISMA_SECRET = process.env.PRISMA_SECRET;
 const PRISMA_URL = process.env.PRISMA_URL;
 const STAGE = process.env.STAGE;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const SENTRY_DSN = process.env.SENTRY_DSN;
 
+Sentry.init({ dsn: SENTRY_DSN });
 const googleOauthClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 const app = express();
-app.use(require("cors")());
+if (process.env.NODE_ENV === "production") {
+  app.use(Sentry.Handlers.requestHandler());
+}
 app.use(require("cookie-parser")());
 app.use(require("express-session")({ secret: "oofcity", resave: true, saveUninitialized: true }));
 
@@ -29,9 +34,16 @@ app.use(async function(req, res, next) {
         audience: GOOGLE_CLIENT_ID,
         idToken: idToken,
       });
-      req.user = value.getPayload();
-      req.tenant = req.user.email.replace(/[^a-zA-Z0-9]/g, "_");
+      const user = value.getPayload();
+      req.user = user;
+      req.tenant = user.email.replace(/[^a-zA-Z0-9]/g, "_");
+      Sentry.setUser({
+        email: user.email,
+        id: user.sub,
+        ip_address: req.ip,
+      });
     } catch (err) {
+      Sentry.captureEvent(err);
       console.error(err);
     } finally {
       next();
@@ -87,11 +99,14 @@ app.use(async function(req, res, next) {
       },
     );
   } catch (err) {
+    Sentry.captureEvent(err);
     console.error(err);
   }
-  if (!data || !data.project) {
-    await prismaManagementClient.request(
-      `
+
+  try {
+    if (!data || !data.project) {
+      await prismaManagementClient.request(
+        `
 mutation CreateProject($name: String!, $stage: String!, $types: String!) {
   addProject(input: { name: $name, stage: $stage }) {
     project {
@@ -103,34 +118,34 @@ mutation CreateProject($name: String!, $stage: String!, $types: String!) {
   }
 }
     `,
-      {
-        name: req.tenant,
-        stage: STAGE,
-        types: datamodel,
-      },
-    );
-  } else if (data.project.datamodel !== datamodel) {
-    await prismaManagementClient.request(
-      `
+        {
+          name: req.tenant,
+          stage: STAGE,
+          types: datamodel,
+        },
+      );
+    } else if (data.project.datamodel !== datamodel) {
+      await prismaManagementClient.request(
+        `
 mutation DeployProject($name: String!, $stage: String!, $types: String!) {
   deploy(input:{name: $name, stage: $stage, types: $types}) {
     clientMutationId
   }
 }
     `,
-      {
-        name: req.tenant,
-        stage: STAGE,
-        types: datamodel,
-      },
-    );
-  }
-  while (!data || data.migrationStatus.status !== "SUCCESS") {
-    await new Promise(resolve => {
-      setTimeout(() => resolve(), 50);
-    });
-    data = await prismaManagementClient.request(
-      `
+        {
+          name: req.tenant,
+          stage: STAGE,
+          types: datamodel,
+        },
+      );
+    }
+    while (!data || data.migrationStatus.status !== "SUCCESS") {
+      await new Promise(resolve => {
+        setTimeout(() => resolve(), 50);
+      });
+      data = await prismaManagementClient.request(
+        `
   query ProjectStatus($name: String!, $stage: String!) {
     migrationStatus(name: $name, stage: $stage) {
       status
@@ -140,11 +155,15 @@ mutation DeployProject($name: String!, $stage: String!, $types: String!) {
     }
   }
     `,
-      {
-        name: req.tenant,
-        stage: STAGE,
-      },
-    );
+        {
+          name: req.tenant,
+          stage: STAGE,
+        },
+      );
+    }
+  } catch (err) {
+    Sentry.captureEvent(err);
+    console.error(err);
   }
   next();
 });
@@ -166,6 +185,10 @@ if (process.env.NODE_ENV === "production") {
     console.log("⚛  Parcel build started");
   });
   app.use(bundler.middleware());
+}
+
+if (process.env.NODE_ENV === "production") {
+  app.use(Sentry.Handlers.errorHandler());
 }
 
 app.listen(PORT);

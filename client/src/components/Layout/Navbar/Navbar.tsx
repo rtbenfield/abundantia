@@ -19,7 +19,7 @@ const Navbar: React.FunctionComponent<NavbarProps> = ({ className }) => {
         </Typography>
         {userContext.isAuthenticated && (
           <GoogleLogout
-            clientId="181580551707-ssj5hjp3vv9p14o8suoai4uoa67f6gh7.apps.googleusercontent.com"
+            clientId={process.env.GOOGLE_CLIENT_ID || ""}
             onLogoutSuccess={() => userContext.clearUser()}
             render={props => (
               <IconButton color="inherit" aria-label="sign out" {...props}>
