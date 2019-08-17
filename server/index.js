@@ -23,7 +23,7 @@ if (process.env.NODE_ENV === "production") {
   app.use(Sentry.Handlers.requestHandler());
 }
 app.use(require("cookie-parser")());
-app.use(require("express-session")({ secret: "oofcity", resave: true, saveUninitialized: true }));
+// app.use(require("express-session")({ secret: "oofcity", resave: true, saveUninitialized: true }));
 
 app.use(async function(req, res, next) {
   const authorizeHeader = req.header("Authorize");
