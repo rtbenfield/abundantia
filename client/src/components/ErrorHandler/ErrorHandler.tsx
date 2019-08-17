@@ -4,7 +4,6 @@ import * as React from "react";
 
 interface ErrorHandlerState {
   hasError: boolean;
-  eventId?: string;
 }
 
 export default class ErrorHandler extends React.Component<{}, ErrorHandlerState> {
@@ -19,8 +18,7 @@ export default class ErrorHandler extends React.Component<{}, ErrorHandlerState>
   public componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     Sentry.withScope(scope => {
       scope.setExtras(errorInfo);
-      const eventId = Sentry.captureException(error);
-      this.setState({ eventId });
+      Sentry.captureException(error);
     });
   }
 
@@ -36,15 +34,8 @@ export default class ErrorHandler extends React.Component<{}, ErrorHandlerState>
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button color="primary" onClick={() => window.location.reload()} variant="outlined">
+            <Button color="primary" onClick={() => window.location.reload()} variant="contained">
               Reload the Page
-            </Button>
-            <Button
-              color="primary"
-              onClick={() => Sentry.showReportDialog({ eventId: this.state.eventId })}
-              variant="contained"
-            >
-              Send Feedback
             </Button>
           </DialogActions>
         </Dialog>

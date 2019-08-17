@@ -13,7 +13,7 @@ const PRISMA_SECRET = process.env.PRISMA_SECRET;
 const PRISMA_URL = process.env.PRISMA_URL;
 const STAGE = process.env.STAGE;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-const SENTRY_DSN = process.env.SENTRY_DSN;
+const SENTRY_DSN = process.env.SENTRY_DSN_BACKEND;
 
 Sentry.init({ dsn: SENTRY_DSN });
 const googleOauthClient = new OAuth2Client(GOOGLE_CLIENT_ID);
@@ -177,7 +177,7 @@ app.all(/api.*/, function(req, res) {
 });
 
 if (process.env.NODE_ENV === "production") {
-  app.use(static(path.join(__dirname, "../client/dist")))
+  app.use(static(path.join(__dirname, "../client/dist")));
   app.all("*", (req, res) => {
     res.sendfile(path.join(__dirname, "../client/dist/index.html"));
   });
