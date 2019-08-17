@@ -15,7 +15,7 @@ const STAGE = process.env.STAGE;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const SENTRY_DSN = process.env.SENTRY_DSN_BACKEND;
 
-Sentry.init({ dsn: SENTRY_DSN });
+Sentry.init({ dsn: SENTRY_DSN, environment: process.env.NODE_ENV || "development" });
 const googleOauthClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 const app = express();

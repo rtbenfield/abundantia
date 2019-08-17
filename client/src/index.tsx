@@ -8,7 +8,7 @@ import Layout from "./components/Layout";
 import { UserProvider } from "./contexts/userContext";
 import ErrorHandler from "./components/ErrorHandler/ErrorHandler";
 
-Sentry.init({ dsn: process.env.SENTRY_DSN_FRONTEND });
+Sentry.init({ dsn: process.env.SENTRY_DSN_FRONTEND, environment: process.env.NODE_ENV || "development" });
 
 const darkModePreferred = window.matchMedia("(prefers-color-scheme: dark)").matches;
 const theme = createMuiTheme({
