@@ -27,6 +27,7 @@ export const UserProvider: React.FunctionComponent = ({ children }) => {
     return {
       clearUser: () => {
         setUser(undefined);
+        Sentry.setUser(null);
         localStorage.removeItem("user");
       },
       connectionString: getConnectionString(user),

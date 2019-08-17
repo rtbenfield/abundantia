@@ -1,6 +1,8 @@
 import { AppBar, IconButton, makeStyles, Toolbar, Typography } from "@material-ui/core";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import * as Sentry from "@sentry/browser";
 import * as React from "react";
+import ReactGA from "react-ga";
 import { GoogleLogout } from "react-google-login";
 import { useUserContext } from "../../../contexts/userContext";
 
@@ -20,7 +22,13 @@ const Navbar: React.FunctionComponent<NavbarProps> = ({ className }) => {
         {userContext.isAuthenticated && (
           <GoogleLogout
             clientId={process.env.GOOGLE_CLIENT_ID || ""}
-            onLogoutSuccess={() => userContext.clearUser()}
+            onLogoutSuccess={() => {
+              ReactGA.event({
+                category: "logout",
+                action: "Logout using Google Login",
+              });
+              userContext.clearUser();
+            }}
             render={props => (
               <IconButton color="inherit" aria-label="sign out" {...props}>
                 <ExitToAppIcon />

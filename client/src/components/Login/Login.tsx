@@ -1,5 +1,7 @@
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, useTheme } from "@material-ui/core";
+import * as Sentry from "@sentry/browser";
 import * as React from "react";
+import ReactGA from "react-ga";
 import GoogleLogin from "react-google-login";
 import { useUserContext } from "../../contexts/userContext";
 
@@ -22,6 +24,10 @@ const Login: React.FunctionComponent = () => {
           cookiePolicy="single_host_origin"
           isSignedIn
           onSuccess={googleUser => {
+            ReactGA.event({
+              category: "login",
+              action: "Login using Google Login",
+            });
             if ("getBasicProfile" in googleUser) {
               const profile = googleUser.getBasicProfile();
               userContext.setUser({
@@ -35,6 +41,7 @@ const Login: React.FunctionComponent = () => {
           }}
           onFailure={error => {
             console.error(error);
+            Sentry.captureException(error);
           }}
           theme={theme.palette.type}
         />

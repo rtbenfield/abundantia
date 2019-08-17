@@ -1,6 +1,7 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@material-ui/core";
 import * as Sentry from "@sentry/browser";
 import * as React from "react";
+import ReactGA from "react-ga";
 
 interface ErrorHandlerState {
   hasError: boolean;
@@ -19,6 +20,10 @@ export default class ErrorHandler extends React.Component<{}, ErrorHandlerState>
     Sentry.withScope(scope => {
       scope.setExtras(errorInfo);
       Sentry.captureException(error);
+    });
+    ReactGA.exception({
+      description: error.message,
+      fatal: true,
     });
   }
 
