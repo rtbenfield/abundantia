@@ -177,7 +177,10 @@ app.all(/api.*/, function(req, res) {
 });
 
 if (process.env.NODE_ENV === "production") {
-  app.all("*", static(path.join(__dirname, "../client/dist")));
+  app.use(static(path.join(__dirname, "../client/dist")))
+  app.all("*", (req, res) => {
+    res.sendfile(path.join(__dirname, "../client/dist/index.html"));
+  });
 } else {
   const Bundler = require("parcel-bundler");
   const bundler = new Bundler(path.join(__dirname, "../client/src/index.html"));
