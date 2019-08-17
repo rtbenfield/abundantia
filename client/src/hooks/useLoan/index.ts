@@ -70,7 +70,7 @@ export enum PeriodType {
 
 export interface UseLoanResult {
   error?: Error;
-  loading: boolean;
+  isLoading: boolean;
   loan?: Loan;
   updateLoan(changes: LoanUpdateModel): Promise<void>;
 }
@@ -95,7 +95,7 @@ export default function useLoan(id: string): UseLoanResult {
 
   return {
     error,
-    loading,
+    isLoading: loading,
     loan,
     updateLoan: async changes => {
       await updateLoan({

@@ -1,7 +1,8 @@
-import { makeStyles, Paper } from "@material-ui/core";
+import { makeStyles, Paper, Typography } from "@material-ui/core";
 import * as React from "react";
 import useLoan, { Loan } from "../../../hooks/useLoan";
 import useScenarios, { ScenarioModel } from "../../../hooks/useScenarios";
+import LoadingIndicator from "../../LoadingIndicator";
 import { useAmortizationTransform } from "../hooks";
 import ComparisonChart from "./ComparisonChart";
 import EditScenarioForm from "./EditScenarioForm";
@@ -12,12 +13,14 @@ interface ExploreProps {
 }
 
 const Explore: React.FunctionComponent<ExploreProps> = ({ loanId }) => {
-  const { error, loading, loan } = useLoan(loanId);
+  const { error, isLoading, loan } = useLoan(loanId);
 
-  if (loading || !loan) {
-    return null;
+  if (isLoading) {
+    return <LoadingIndicator size="fill" />;
   } else if (error) {
-    return <h1>{error.message}</h1>;
+    throw error;
+  } else if (!loan) {
+    return <Typography variant="h3">Loan not found</Typography>;
   } else {
     return <Explore2 loan={loan} />;
   }
@@ -27,7 +30,7 @@ const Explore2: React.FunctionComponent<{ loan: Loan }> = ({ loan }) => {
   const classes = useStyles();
   const amortizationSchedule = useAmortizationTransform(loan);
   const [editScenario, setEditScenario] = React.useState<string | null>(null);
-  const { addScenario, removeScenario, scenarios, updateScenario } = useScenarios(loan);
+  const { addScenario, isLoading, removeScenario, scenarios, updateScenario } = useScenarios(loan);
 
   async function handleAddScenario() {
     if (scenarios.length < 10) {
@@ -48,50 +51,59 @@ const Explore2: React.FunctionComponent<{ loan: Loan }> = ({ loan }) => {
     setEditScenario(null);
   }
 
-  return (
-    <div className={classes.root}>
-      <Paper square>
-        <Scenarios
-          loan={loan}
-          onAddScenario={handleAddScenario}
-          onEditScenario={s => setEditScenario(s.id)}
-          onRemoveScenario={handleRemoveScenario}
-          scenarios={scenarios}
-        />
-      </Paper>
-      {editScenario === null && (
-        <div className={classes.comparison}>
-          <ComparisonChart baseScenario={amortizationSchedule} field="balance" scenarios={scenarios} title="Balance" />
-          <ComparisonChart
-            baseScenario={amortizationSchedule}
-            field="amount"
+  if (isLoading) {
+    return <LoadingIndicator size="fill" />;
+  } else {
+    return (
+      <div className={classes.root}>
+        <Paper square>
+          <Scenarios
+            loan={loan}
+            onAddScenario={handleAddScenario}
+            onEditScenario={s => setEditScenario(s.id)}
+            onRemoveScenario={handleRemoveScenario}
             scenarios={scenarios}
-            title="Payment Amount"
           />
-          <ComparisonChart
-            baseScenario={amortizationSchedule}
-            field="interest"
-            scenarios={scenarios}
-            title="Interest Payment"
+        </Paper>
+        {editScenario === null && (
+          <div className={classes.comparison}>
+            <ComparisonChart
+              baseScenario={amortizationSchedule}
+              field="balance"
+              scenarios={scenarios}
+              title="Balance"
+            />
+            <ComparisonChart
+              baseScenario={amortizationSchedule}
+              field="amount"
+              scenarios={scenarios}
+              title="Payment Amount"
+            />
+            <ComparisonChart
+              baseScenario={amortizationSchedule}
+              field="interest"
+              scenarios={scenarios}
+              title="Interest Payment"
+            />
+            <ComparisonChart
+              baseScenario={amortizationSchedule}
+              field="principal"
+              scenarios={scenarios}
+              title="Principal Payment"
+            />
+          </div>
+        )}
+        {editScenario !== null && (
+          <EditScenarioForm
+            key={editScenario}
+            onCancel={() => setEditScenario(null)}
+            onSave={handleSaveScenario}
+            scenario={scenarios.find(x => x.id === editScenario)!}
           />
-          <ComparisonChart
-            baseScenario={amortizationSchedule}
-            field="principal"
-            scenarios={scenarios}
-            title="Principal Payment"
-          />
-        </div>
-      )}
-      {editScenario !== null && (
-        <EditScenarioForm
-          key={editScenario}
-          onCancel={() => setEditScenario(null)}
-          onSave={handleSaveScenario}
-          scenario={scenarios.find(x => x.id === editScenario)!}
-        />
-      )}
-    </div>
-  );
+        )}
+      </div>
+    );
+  }
 };
 
 export default Explore;

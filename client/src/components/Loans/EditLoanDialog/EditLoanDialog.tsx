@@ -82,7 +82,7 @@ function useLoanForm(initialValues: Partial<Loan> = DEFAULT_INITIAL_VALUES): Use
 }
 
 const EditLoanDialog: React.FunctionComponent<EditLoanDialogProps> = ({ loanId, onClose, open }) => {
-  const { loading, loan, updateLoan } = useLoan(loanId);
+  const { isLoading, loan, updateLoan } = useLoan(loanId);
   const { errors, getLoan, hasErrors, reset, setValue, values } = useLoanForm(loan);
 
   async function handleSubmit() {
@@ -93,7 +93,7 @@ const EditLoanDialog: React.FunctionComponent<EditLoanDialogProps> = ({ loanId, 
   return (
     <Dialog maxWidth="xs" onClose={onClose} open={open} onExited={reset}>
       <DialogTitle>Edit Loan</DialogTitle>
-      {!loading && (
+      {!isLoading && (
         <DialogContent>
           <TextField
             autoFocus

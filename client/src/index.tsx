@@ -6,6 +6,7 @@ import { BrowserRouter } from "react-router-dom";
 import { ApolloProvider } from "./apollo";
 import Layout from "./components/Layout";
 import { UserProvider } from "./contexts/userContext";
+import ErrorHandler from "./components/ErrorHandler/ErrorHandler";
 
 Sentry.init({ dsn: process.env.SENTRY_DSN });
 
@@ -31,7 +32,9 @@ const App: React.FunctionComponent = () => {
         <BrowserRouter>
           <MuiThemeProvider theme={theme}>
             <CssBaseline />
-            <Layout />
+            <ErrorHandler>
+              <Layout />
+            </ErrorHandler>
           </MuiThemeProvider>
         </BrowserRouter>
       </ApolloProvider>

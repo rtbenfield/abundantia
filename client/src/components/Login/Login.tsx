@@ -19,6 +19,8 @@ const Login: React.FunctionComponent = () => {
         <GoogleLogin
           clientId={process.env.GOOGLE_CLIENT_ID || ""}
           buttonText="Login"
+          cookiePolicy="single_host_origin"
+          isSignedIn
           onSuccess={googleUser => {
             if ("getBasicProfile" in googleUser) {
               const profile = googleUser.getBasicProfile();
@@ -34,7 +36,6 @@ const Login: React.FunctionComponent = () => {
           onFailure={error => {
             console.error(error);
           }}
-          cookiePolicy="single_host_origin"
           theme={theme.palette.type}
         />
       </DialogActions>

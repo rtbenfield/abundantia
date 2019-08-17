@@ -1,9 +1,10 @@
 import { Card, Fab, makeStyles, Tabs, Tab, Typography } from "@material-ui/core";
-import AddIcon from "@material-ui/icons/Add";
+// import AddIcon from "@material-ui/icons/Add";
 import * as React from "react";
 import useLoan from "../../../hooks/useLoan";
 import AmortizationTable from "../AmortizationTable";
 import LoanInfoCard from "./LoanInfoCard";
+import LoadingIndicator from "../../LoadingIndicator";
 import PaymentsTable from "../PaymentsTable";
 import AddPaymentDialog from "./AddPaymentDialog";
 
@@ -18,14 +19,14 @@ const LoanOverview: React.FunctionComponent<LoanOverviewProps> = ({ deletePath, 
   const classes = useStyles();
   const [tab, setTab] = React.useState<"amortization" | "payments">("payments");
   const [addPaymentOpen, setAddPaymentOpen] = React.useState(false);
-  const { error, loading, loan } = useLoan(loanId);
+  const { error, isLoading, loan } = useLoan(loanId);
 
-  if (loading || !loan) {
-    return null;
+  if (isLoading) {
+    return <LoadingIndicator size="fill" />;
   } else if (error) {
-    return <Typography variant="h1">{error.message}</Typography>;
+    throw error;
   } else if (!loan) {
-    return <Typography variant="h1">Loan not found</Typography>;
+    return <Typography variant="h3">Loan not found</Typography>;
   } else {
     return (
       <div className={classes.root}>
@@ -52,9 +53,9 @@ const LoanOverview: React.FunctionComponent<LoanOverviewProps> = ({ deletePath, 
             </div>
           )}
         </Card>
-        <Fab aria-label="Add Payment" className={classes.fab} color="primary" onClick={() => setAddPaymentOpen(true)}>
+        {/* <Fab aria-label="Add Payment" className={classes.fab} color="primary" onClick={() => setAddPaymentOpen(true)}>
           <AddIcon />
-        </Fab>
+        </Fab> */}
         <AddPaymentDialog loanId={loanId} onClose={() => setAddPaymentOpen(false)} open={addPaymentOpen} />
       </div>
     );

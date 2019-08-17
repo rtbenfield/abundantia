@@ -38,7 +38,7 @@ export enum PeriodType {
 
 export interface UseLoansResult {
   error?: Error;
-  loading: boolean;
+  isLoading: boolean;
   loans: readonly Loan[];
   createLoan(loan: LoanCreateModel): Promise<{ id: string }>;
   deleteLoan(id: string): Promise<void>;
@@ -84,7 +84,7 @@ export default function useLoans(): UseLoansResult {
       });
     },
     error,
-    loading: loading,
+    isLoading: loading,
     loans: data && data.loans ? data.loans : [],
   };
 }

@@ -21,21 +21,7 @@ const userContext = React.createContext<Readonly<UserContext> | null>(null);
 userContext.displayName = "UserContext";
 
 export const UserProvider: React.FunctionComponent = ({ children }) => {
-  const [user, setUser] = React.useState<Readonly<UserInfo> | undefined>(() => {
-    const userJson = localStorage.getItem("user");
-    if (userJson) {
-      try {
-        const user = JSON.parse(userJson) as UserInfo;
-        Sentry.setUser({
-          email: user.email,
-          id: user.id,
-        });
-        return user;
-      } finally {
-      }
-    }
-    return undefined;
-  });
+  const [user, setUser] = React.useState<Readonly<UserInfo> | undefined>();
 
   const value = React.useMemo<UserContext>(() => {
     return {

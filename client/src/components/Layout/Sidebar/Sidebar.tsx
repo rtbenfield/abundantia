@@ -11,13 +11,13 @@ interface SidebarProps {
 
 const Sidebar: React.FunctionComponent<SidebarProps> = ({ className }) => {
   const classes = useStyles();
-  const { error, loading, loans } = useLoans();
+  const { error, isLoading, loans } = useLoans();
   if (error) {
-    return <h1>{error.message}</h1>;
+    throw error;
   } else {
     return (
       <Paper className={classNames(classes.root, className)} elevation={16} square>
-        {!loading && (
+        {!isLoading && (
           <List>
             {loans.map(l => (
               <ListItemLink key={l.id} to={`/loans/${l.id}`}>
