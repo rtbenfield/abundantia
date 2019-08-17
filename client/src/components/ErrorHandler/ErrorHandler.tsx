@@ -29,8 +29,8 @@ export default class ErrorHandler extends React.Component<{}, ErrorHandlerState>
           <DialogTitle>Big Oof</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Congratulations! You've found a problem that we haven't fixed yet. Some of the error details have already
-              been sent to us, but we would appreciate if you took a minute to give us more details.
+              Congratulations! You've found a problem that we haven't fixed yet. The details have already been sent to
+              us. Sorry for the inconvenience!
             </DialogContentText>
           </DialogContent>
           <DialogActions>
