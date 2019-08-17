@@ -8,6 +8,7 @@ import {
   TextField,
 } from "@material-ui/core";
 import * as React from "react";
+import useDocumentTitle from "../../../hooks/useDocumentTitle";
 import useLoans, { PeriodType } from "../../../hooks/useLoans";
 import { DateTime } from "luxon";
 
@@ -18,6 +19,7 @@ interface AddLoanDialogProps {
 }
 
 const AddLoanDialog: React.FunctionComponent<AddLoanDialogProps> = ({ onClose, onLoanAdded, open }) => {
+  useDocumentTitle("Add Loan");
   const { createLoan } = useLoans();
   const [name, setName] = React.useState<string>("");
   const [loanAmount, setLoanAmount] = React.useState<string>("");

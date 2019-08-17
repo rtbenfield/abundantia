@@ -1,5 +1,6 @@
 import { makeStyles, Paper, Typography } from "@material-ui/core";
 import * as React from "react";
+import useDocumentTitle from "../../../hooks/useDocumentTitle";
 import useLoan, { Loan } from "../../../hooks/useLoan";
 import useScenarios, { ScenarioModel } from "../../../hooks/useScenarios";
 import LoadingIndicator from "../../LoadingIndicator";
@@ -13,6 +14,7 @@ interface ExploreProps {
 }
 
 const Explore: React.FunctionComponent<ExploreProps> = ({ loanId }) => {
+  useDocumentTitle("Explore");
   const { error, isLoading, loan } = useLoan(loanId);
 
   if (isLoading) {
@@ -27,6 +29,7 @@ const Explore: React.FunctionComponent<ExploreProps> = ({ loanId }) => {
 };
 
 const Explore2: React.FunctionComponent<{ loan: Loan }> = ({ loan }) => {
+  useDocumentTitle(`Explore ${loan.name}`);
   const classes = useStyles();
   const amortizationSchedule = useAmortizationTransform(loan);
   const [editScenario, setEditScenario] = React.useState<string | null>(null);

@@ -7,6 +7,7 @@ import { BrowserRouter } from "react-router-dom";
 import { ApolloProvider } from "./apollo";
 import Layout from "./components/Layout";
 import RouteAnalytics from "./components/RouteAnalytics";
+import { DocumentTitleProvider } from "./contexts/documentTitleContext";
 import { UserProvider } from "./contexts/userContext";
 import ErrorHandler from "./components/ErrorHandler/ErrorHandler";
 
@@ -36,19 +37,21 @@ ReactGA.set({
 
 const App: React.FunctionComponent = () => {
   return (
-    <UserProvider>
-      <ApolloProvider>
-        <BrowserRouter>
-          <RouteAnalytics />
-          <MuiThemeProvider theme={theme}>
-            <CssBaseline />
-            <ErrorHandler>
-              <Layout />
-            </ErrorHandler>
-          </MuiThemeProvider>
-        </BrowserRouter>
-      </ApolloProvider>
-    </UserProvider>
+    <DocumentTitleProvider defaultTitle="Home" suffix=" - Loan Rover">
+      <UserProvider>
+        <ApolloProvider>
+          <BrowserRouter>
+            <RouteAnalytics />
+            <MuiThemeProvider theme={theme}>
+              <CssBaseline />
+              <ErrorHandler>
+                <Layout />
+              </ErrorHandler>
+            </MuiThemeProvider>
+          </BrowserRouter>
+        </ApolloProvider>
+      </UserProvider>
+    </DocumentTitleProvider>
   );
 };
 

@@ -1,6 +1,7 @@
-import { Card, Fab, makeStyles, Tabs, Tab, Typography } from "@material-ui/core";
+import { Card, makeStyles, Tabs, Tab, Typography } from "@material-ui/core";
 // import AddIcon from "@material-ui/icons/Add";
 import * as React from "react";
+import useDocumentTitle from "../../../hooks/useDocumentTitle";
 import useLoan from "../../../hooks/useLoan";
 import AmortizationTable from "../AmortizationTable";
 import LoanInfoCard from "./LoanInfoCard";
@@ -16,6 +17,7 @@ interface LoanOverviewProps {
 }
 
 const LoanOverview: React.FunctionComponent<LoanOverviewProps> = ({ deletePath, editPath, explorePath, loanId }) => {
+  useDocumentTitle("Loan");
   const classes = useStyles();
   const [tab, setTab] = React.useState<"amortization" | "payments">("payments");
   const [addPaymentOpen, setAddPaymentOpen] = React.useState(false);

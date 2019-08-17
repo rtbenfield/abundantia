@@ -1,5 +1,6 @@
-import * as React from "react";
 import { Button, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText } from "@material-ui/core";
+import * as React from "react";
+import useDocumentTitle from "../../../hooks/useDocumentTitle";
 import useLoans from "../../../hooks/useLoans";
 
 interface DeleteLoanDialogProps {
@@ -10,8 +11,17 @@ interface DeleteLoanDialogProps {
 }
 
 const DeleteLoanDialog: React.FunctionComponent<DeleteLoanDialogProps> = ({ loanId, onClose, onLoanDeleted, open }) => {
-  const { deleteLoan, loans } = useLoans();
+  const { deleteLoan, error, isLoading, loans } = useLoans();
+  if (error) {
+    throw error;
+  } else if (isLoading) {
+    return null;
+  }
+
   const loanInfo = loans.find(x => x.id === loanId);
+  if (!loanInfo) {
+    throw new Error(`Loan ${loanId} not found`);
+  }
 
   async function handleConfirm() {
     await deleteLoan(loanId);

@@ -4,8 +4,10 @@ import * as React from "react";
 import ReactGA from "react-ga";
 import GoogleLogin from "react-google-login";
 import { useUserContext } from "../../contexts/userContext";
+import useDocumentTitle from "../../hooks/useDocumentTitle";
 
 const Login: React.FunctionComponent = () => {
+  useDocumentTitle("Login");
   const theme = useTheme();
   const userContext = useUserContext();
   return (

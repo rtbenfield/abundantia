@@ -6,6 +6,7 @@ import { DateTime } from "luxon";
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { Loan } from "../../../hooks/useLoan";
+import useDocumentTitle from "../../../hooks/useDocumentTitle";
 
 interface LoanInfoCardProps {
   className?: string;
@@ -22,6 +23,7 @@ const LoanInfoCard: React.FunctionComponent<LoanInfoCardProps> = ({
   loan,
   ...props
 }) => {
+  useDocumentTitle(loan.name);
   const classes = useStyles();
   const totalPrincipalPaid = loan.payments.reduce((prev, curr) => prev + curr.principal, 0);
   const totalInterestPaid = loan.payments.reduce((prev, curr) => prev + curr.interest, 0);
