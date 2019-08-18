@@ -26,7 +26,7 @@ export function makeAmortizationSchedule(
   const amount = calculatePaymentAmount(loan);
 
   return Array.from({ length: loan.periods }).reduce<AmortizationPayment[]>((prev, _, i) => {
-    const last = prev[i - 1] || { balance: loan.loanAmount };
+    const last = prev[i - 1] || { balance: loan.loanAmount, interestToDate: 0, principalToDate: 0 };
     const interest = last.balance * loan.periodInterestRate;
     const principal = amount - interest;
 
@@ -41,8 +41,10 @@ export function makeAmortizationSchedule(
       balance: Math.max(last.balance - principal - additionalPrincipal, 0),
       date,
       interest,
+      interestToDate: last.interestToDate + interest,
       paymentNumber: i + 1,
       principal: principal + additionalPrincipal,
+      principalToDate: last.principalToDate + principal + additionalPrincipal,
     });
 
     return prev;

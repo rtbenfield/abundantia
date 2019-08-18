@@ -86,13 +86,25 @@ const Explore2: React.FunctionComponent<{ loan: Loan }> = ({ loan }) => {
               baseScenario={amortizationSchedule}
               field="interest"
               scenarios={scenarios}
-              title="Interest Payment"
+              title="Interest Per Payment"
             />
             <ComparisonChart
               baseScenario={amortizationSchedule}
               field="principal"
               scenarios={scenarios}
-              title="Principal Payment"
+              title="Principal Per Payment"
+            />
+            <ComparisonChart
+              baseScenario={amortizationSchedule}
+              field="interestToDate"
+              scenarios={scenarios}
+              title="Total Interest Paid"
+            />
+            <ComparisonChart
+              baseScenario={amortizationSchedule}
+              field="principalToDate"
+              scenarios={scenarios}
+              title="Total Principal Paid"
             />
           </div>
         )}
@@ -116,11 +128,11 @@ const useStyles = makeStyles(theme => ({
     display: "grid",
     gridGap: theme.spacing(),
     gridTemplateColumns: "1fr",
-    gridTemplateRows: "min-content min-content min-content min-content",
+    gridTemplateRows: "min-content min-content min-content min-content min-content min-content",
     padding: theme.spacing(2),
     [theme.breakpoints.up("md")]: {
       gridTemplateColumns: "1fr 1fr",
-      gridTemplateRows: "min-content min-content",
+      gridTemplateRows: "min-content min-content min-content",
     },
   },
   root: {

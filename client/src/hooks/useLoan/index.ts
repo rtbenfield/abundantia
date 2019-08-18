@@ -8,8 +8,10 @@ export interface AmortizationPayment {
   balance: number;
   date: Date;
   interest: number;
+  interestToDate: number;
   paymentNumber: number;
   principal: number;
+  principalToDate: number;
 }
 
 export interface Loan {

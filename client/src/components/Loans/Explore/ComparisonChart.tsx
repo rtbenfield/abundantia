@@ -3,11 +3,10 @@ import red from "@material-ui/core/colors/red";
 import green from "@material-ui/core/colors/green";
 import purple from "@material-ui/core/colors/purple";
 import indigo from "@material-ui/core/colors/indigo";
-import { Card, CardHeader } from "@material-ui/core";
+import { Card, CardHeader, useTheme, Divider } from "@material-ui/core";
 import * as React from "react";
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { Scenario } from "../../../hooks/useScenarios";
-import { AmortizationPayment } from "../types";
+import { AmortizationPayment, Scenario } from "../../../hooks/useScenarios";
 
 interface ComparisonChartProps {
   baseScenario: readonly AmortizationPayment[];
@@ -17,6 +16,7 @@ interface ComparisonChartProps {
 }
 
 const ComparisonChart: React.FunctionComponent<ComparisonChartProps> = ({ baseScenario, field, scenarios, title }) => {
+  const theme = useTheme();
   const data = React.useMemo(() => {
     return baseScenario.map((base, i) => {
       const dateScenarios = Object.fromEntries(
@@ -27,7 +27,7 @@ const ComparisonChart: React.FunctionComponent<ComparisonChartProps> = ({ baseSc
       );
       return {
         base: base[field],
-        date: base.date,
+        date: base.date.getTime(),
         ...dateScenarios,
       };
     });
@@ -38,13 +38,37 @@ const ComparisonChart: React.FunctionComponent<ComparisonChartProps> = ({ baseSc
       <CardHeader title={title} titleTypographyProps={{ variant: "h6" }} />
       <ResponsiveContainer height={240}>
         <LineChart data={data} syncId="explore">
-          <Tooltip label={title} formatter={(value, name) => [currencyFormat.format(+value), name]} />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: theme.palette.background.paper,
+              border: "none",
+              borderRadius: theme.shape.borderRadius,
+              boxShadow: theme.shadows[23],
+            }}
+            cursor={{
+              stroke: theme.palette.divider,
+            }}
+            formatter={(value, name) => [currencyFormat.format(+value), name]}
+            labelFormatter={value => dateFormat.format(new Date(value))}
+            labelStyle={theme.typography.caption}
+          />
           <XAxis dataKey="date" hide />
           <YAxis domain={[0, "dataMax"]} hide type="number" />
-          <Line dataKey="base" dot={false} name="Base" stroke={colors[0]} />
+          <Line
+            activeDot={{
+              stroke: "none",
+            }}
+            dataKey="base"
+            dot={false}
+            name="Base"
+            stroke={colors[0]}
+          />
           {scenarios.map((s, i) => {
             return (
               <Line
+                activeDot={{
+                  stroke: "none",
+                }}
                 dataKey={`scenario${i}`}
                 dot={false}
                 name={s.name}
@@ -66,4 +90,11 @@ const colors: readonly string[] = [blue[200], red[200], green[200], purple[200],
 const currencyFormat = new Intl.NumberFormat("en-US", {
   currency: "USD",
   style: "currency",
+});
+
+const dateFormat = new Intl.DateTimeFormat("en-US", {
+  day: "numeric",
+  month: "numeric",
+  timeZone: "UTC",
+  year: "numeric",
 });
