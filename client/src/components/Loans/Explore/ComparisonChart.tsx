@@ -3,7 +3,7 @@ import red from "@material-ui/core/colors/red";
 import green from "@material-ui/core/colors/green";
 import purple from "@material-ui/core/colors/purple";
 import indigo from "@material-ui/core/colors/indigo";
-import { Card, CardHeader, useTheme, Divider } from "@material-ui/core";
+import { Card, CardHeader, useTheme } from "@material-ui/core";
 import * as React from "react";
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AmortizationPayment, Scenario } from "../../../hooks/useScenarios";

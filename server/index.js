@@ -25,6 +25,16 @@ if (process.env.NODE_ENV === "production") {
 app.use(require("cookie-parser")());
 // app.use(require("express-session")({ secret: "oofcity", resave: true, saveUninitialized: true }));
 
+if (process.env.NODE_ENV !== "production") {
+  app.use(function(req, res, next) {
+    if (req.secure) {
+      next();
+    } else {
+      res.redirect(`https://${req.hostname}${req.url}`);
+    }
+  });
+}
+
 app.use(async function(req, res, next) {
   const authorizeHeader = req.header("Authorize");
   if (authorizeHeader) {
