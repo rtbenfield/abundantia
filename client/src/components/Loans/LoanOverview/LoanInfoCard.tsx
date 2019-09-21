@@ -29,9 +29,6 @@ const LoanInfoCard: React.FunctionComponent<LoanInfoCardProps> = ({
   const totalInterestPaid = loan.payments.reduce((prev, curr) => prev + curr.interest, 0);
   const totalPaid = totalPrincipalPaid + totalInterestPaid;
   const principalBalance = loan.loanAmount - totalPrincipalPaid;
-  const nextPaymentDate = DateTime.utc()
-    .plus({ month: 1 })
-    .startOf("month");
 
   return (
     <Card {...props}>
@@ -41,13 +38,10 @@ const LoanInfoCard: React.FunctionComponent<LoanInfoCardProps> = ({
             <ListItemText primary="Loan amount" secondary={currencyFormat.format(loan.loanAmount)} />
           </ListItem>
           <ListItem component="div">
-            <ListItemText primary="Periods" secondary={numberFormat.format(loan.periods)} />
+            <ListItemText primary="Years" secondary={numberFormat.format(loan.periods / 12)} />
           </ListItem>
           <ListItem component="div">
-            <ListItemText primary="Period type" secondary={loan.periodType} />
-          </ListItem>
-          <ListItem component="div">
-            <ListItemText primary="Period interest rate" secondary={percentFormat.format(loan.periodInterestRate)} />
+            <ListItemText primary="Annual interest rate" secondary={percentFormat.format(loan.periodInterestRate * 12)} />
           </ListItem>
           <ListItem component="div">
             <ListItemText primary="Start date" secondary={dateFormat.format(loan.startDate)} />
@@ -65,9 +59,6 @@ const LoanInfoCard: React.FunctionComponent<LoanInfoCardProps> = ({
           </ListItem>
           <ListItem component="div">
             <ListItemText primary="Total paid" secondary={currencyFormat.format(totalPaid)} />
-          </ListItem>
-          <ListItem component="div">
-            <ListItemText primary="Next payment due" secondary={dateFormat.format(nextPaymentDate.toJSDate())} />
           </ListItem>
         </List>
       </CardContent>

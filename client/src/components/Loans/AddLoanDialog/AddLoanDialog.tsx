@@ -23,16 +23,16 @@ const AddLoanDialog: React.FunctionComponent<AddLoanDialogProps> = ({ onClose, o
   const { createLoan } = useLoans();
   const [name, setName] = React.useState<string>("");
   const [loanAmount, setLoanAmount] = React.useState<string>("");
-  const [periods, setPeriods] = React.useState<string>("");
-  const [periodInterestRate, setPeriodInterestRate] = React.useState<string>("");
+  const [years, setYears] = React.useState<string>("");
+  const [annualInterestRate, setAnnualInterestRate] = React.useState<string>("");
   const [startDate, setStartDate] = React.useState<string>("");
 
   async function handleSubmit() {
     const loan = await createLoan({
       loanAmount: Number(loanAmount),
       name,
-      periodInterestRate: Number(periodInterestRate),
-      periods: Number(periods),
+      periodInterestRate: Number(annualInterestRate) / 12 / 100,
+      periods: Number(years) * 12,
       periodType: PeriodType.monthly,
       startDate: new Date(startDate),
     });
@@ -42,8 +42,8 @@ const AddLoanDialog: React.FunctionComponent<AddLoanDialogProps> = ({ onClose, o
   function reset() {
     setName("");
     setLoanAmount("");
-    setPeriods("");
-    setPeriodInterestRate("");
+    setYears("");
+    setAnnualInterestRate("");
     setStartDate("");
   }
 
@@ -74,20 +74,27 @@ const AddLoanDialog: React.FunctionComponent<AddLoanDialogProps> = ({ onClose, o
           type="number"
           value={loanAmount}
         />
-        <TextField fullWidth label="Months" onChange={e => setPeriods(e.target.value)} type="number" value={periods} />
         <TextField
-          error={!periodInterestRate || isNaN(Number(periodInterestRate))}
+          error={!years || isNaN(Number(years))}
           fullWidth
-          helperText="Divide annual interest rates by 12"
+          label="Years"
+          margin="normal"
+          onChange={e => setYears(e.target.value)}
+          type="number"
+          value={years}
+        />
+        <TextField
+          error={!annualInterestRate || isNaN(Number(annualInterestRate))}
+          fullWidth
           InputProps={{
             endAdornment: <InputAdornment position="end">%</InputAdornment>,
           }}
-          label="Period Interest Rate"
+          label="Annual Interest Rate"
           margin="normal"
-          onChange={e => setPeriodInterestRate(e.target.value)}
+          onChange={e => setAnnualInterestRate(e.target.value)}
           required
           type="number"
-          value={periodInterestRate}
+          value={annualInterestRate}
         />
         <TextField
           error={!startDate || !DateTime.fromFormat(startDate, "yyyy-LL-dd").isValid}

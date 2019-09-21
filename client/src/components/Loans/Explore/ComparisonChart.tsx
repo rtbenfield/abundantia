@@ -1,8 +1,3 @@
-import blue from "@material-ui/core/colors/blue";
-import red from "@material-ui/core/colors/red";
-import green from "@material-ui/core/colors/green";
-import purple from "@material-ui/core/colors/purple";
-import indigo from "@material-ui/core/colors/indigo";
 import { Card, CardHeader, useTheme } from "@material-ui/core";
 import * as React from "react";
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -85,7 +80,7 @@ const ComparisonChart: React.FunctionComponent<ComparisonChartProps> = ({ baseSc
 
 export default ComparisonChart;
 
-const colors: readonly string[] = [blue[200], red[200], green[200], purple[200], indigo[200]];
+const colors: readonly string[] = ["#B48EAD", "#D08770", "#A3BE8C", "#EBCB8B", "#8FBCBB", "#88C0D0", "#88C0D0", "#5E81AC", "#BF616A"];
 
 const currencyFormat = new Intl.NumberFormat("en-US", {
   currency: "USD",

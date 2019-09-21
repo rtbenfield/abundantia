@@ -8,7 +8,6 @@ import {
   TextField,
 } from "@material-ui/core";
 import * as React from "react";
-import useDocumentTitle from "../../../hooks/useDocumentTitle";
 import useLoan, { Loan, LoanUpdateModel } from "../../../hooks/useLoan";
 import { DateTime } from "luxon";
 
@@ -18,41 +17,49 @@ interface EditLoanDialogProps {
   onClose(): void;
 }
 
-interface UseLoanFormResult {
-  errors: Readonly<Record<keyof LoanUpdateModel, string | undefined>>;
-  hasErrors: boolean;
-  values: Readonly<Record<keyof LoanUpdateModel, string>>;
-  getLoan(): LoanUpdateModel;
-  reset(): void;
-  setValue(key: keyof LoanUpdateModel, value: string): void;
+interface LoanForm {
+  annualInterestRate: string;
+  loanAmount: string;
+  name: string;
+  startDate: string;
+  years: string;
 }
 
-function convertLoanToValues(loan: Partial<LoanUpdateModel> = {}): Record<keyof LoanUpdateModel, string> {
+interface UseLoanFormResult {
+  errors: Readonly<Record<keyof LoanForm, string | undefined>>;
+  hasErrors: boolean;
+  values: Readonly<Record<keyof LoanForm, string>>;
+  getLoan(): LoanUpdateModel;
+  reset(): void;
+  setValue(key: keyof LoanForm, value: string): void;
+}
+
+function convertLoanToValues(loan: Partial<LoanUpdateModel> = {}): LoanForm {
   return {
+    annualInterestRate: loan.periodInterestRate ? (loan.periodInterestRate * 12 * 100).toFixed(3) : "",
     loanAmount: loan.loanAmount ? loan.loanAmount.toString() : "",
     name: loan.name || "",
-    periodInterestRate: loan.periodInterestRate ? (loan.periodInterestRate * 100).toFixed(3) : "",
-    periods: loan.periods ? loan.periods.toString() : "",
     startDate: loan.startDate ? DateTime.fromJSDate(loan.startDate).toFormat("yyyy-LL-dd") : "",
+    years: loan.periods ? (loan.periods / 12).toString() : "",
   };
 }
 
-function getErrors(values: Record<keyof LoanUpdateModel, string>): Record<keyof LoanUpdateModel, string | undefined> {
+function getErrors(values: LoanForm): Record<keyof LoanForm, string | undefined> {
   return {
+    annualInterestRate:
+      !values.annualInterestRate || isNaN(Number(values.annualInterestRate))
+        ? "Annual Interest Rate is required"
+        : undefined,
     loanAmount: !values.loanAmount || isNaN(Number(values.loanAmount)) ? "Loan Amount is required" : undefined,
     name: !values.name ? "Name is required" : undefined,
-    periodInterestRate:
-      !values.periodInterestRate || isNaN(Number(values.periodInterestRate))
-        ? "Period Interest Rate is required"
-        : undefined,
-    periods: !values.periods || isNaN(Number(values.periods)) ? "Months is required" : undefined,
     startDate: !DateTime.fromFormat(values.startDate, "yyyy-LL-dd").isValid ? "Invalid date" : undefined,
+    years: !values.years || isNaN(Number(values.years)) ? "Years is required" : undefined,
   };
 }
 
 const DEFAULT_INITIAL_VALUES: Partial<Loan> = {};
 function useLoanForm(initialValues: Partial<Loan> = DEFAULT_INITIAL_VALUES): UseLoanFormResult {
-  const [values, setValues] = React.useState<Readonly<Record<keyof LoanUpdateModel, string>>>(() => {
+  const [values, setValues] = React.useState<Readonly<LoanForm>>(() => {
     return convertLoanToValues(initialValues);
   });
 
@@ -69,8 +76,8 @@ function useLoanForm(initialValues: Partial<Loan> = DEFAULT_INITIAL_VALUES): Use
       return {
         loanAmount: Number(values.loanAmount),
         name: values.name,
-        periodInterestRate: Number(values.periodInterestRate) / 100,
-        periods: Number(values.periods),
+        periodInterestRate: Number(values.annualInterestRate) / 12 / 100,
+        periods: Number(values.years) * 12,
         startDate: DateTime.fromFormat(values.startDate, "yyyy-LL-dd", { locale: "UTC" }).toJSDate(),
       };
     },
@@ -122,29 +129,29 @@ const EditLoanDialog: React.FunctionComponent<EditLoanDialogProps> = ({ loanId, 
             value={values.loanAmount}
           />
           <TextField
-            error={!!errors.periods}
+            error={!!errors.years}
             fullWidth
-            helperText={errors.periods}
-            label="Months"
+            helperText={errors.years}
+            label="Years"
             margin="normal"
-            onChange={e => setValue("periods", e.target.value)}
+            onChange={e => setValue("years", e.target.value)}
             required
             type="number"
-            value={values.periods}
+            value={values.years}
           />
           <TextField
-            error={!!errors.periodInterestRate}
+            error={!!errors.annualInterestRate}
             fullWidth
-            helperText={errors.periodInterestRate || "Divide annual interest rates by 12"}
+            helperText={errors.annualInterestRate}
             InputProps={{
               endAdornment: <InputAdornment position="end">%</InputAdornment>,
             }}
-            label="Period Interest Rate"
+            label="Annual Interest Rate"
             margin="normal"
-            onChange={e => setValue("periodInterestRate", e.target.value)}
+            onChange={e => setValue("annualInterestRate", e.target.value)}
             required
             type="number"
-            value={values.periodInterestRate}
+            value={values.annualInterestRate}
           />
           <TextField
             error={!!errors.startDate}
