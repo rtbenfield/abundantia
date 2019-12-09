@@ -7,10 +7,10 @@ import {
   InputAdornment,
   TextField,
 } from "@material-ui/core";
+import { DatePicker } from "@material-ui/pickers";
 import * as React from "react";
 import useDocumentTitle from "../../../hooks/useDocumentTitle";
 import useLoans, { PeriodType } from "../../../hooks/useLoans";
-import { DateTime } from "luxon";
 
 interface AddLoanDialogProps {
   open: boolean;
@@ -25,16 +25,19 @@ const AddLoanDialog: React.FunctionComponent<AddLoanDialogProps> = ({ onClose, o
   const [loanAmount, setLoanAmount] = React.useState<string>("");
   const [years, setYears] = React.useState<string>("");
   const [annualInterestRate, setAnnualInterestRate] = React.useState<string>("");
-  const [startDate, setStartDate] = React.useState<string>("");
+  const [startDate, setStartDate] = React.useState<Date | undefined>(undefined);
 
   async function handleSubmit() {
+    if (!startDate) {
+      throw new Error("startDate is undefined");
+    }
     const loan = await createLoan({
       loanAmount: Number(loanAmount),
       name,
       periodInterestRate: Number(annualInterestRate) / 12 / 100,
       periods: Number(years) * 12,
       periodType: PeriodType.monthly,
-      startDate: new Date(startDate),
+      startDate,
     });
     onLoanAdded(loan);
   }
@@ -44,7 +47,7 @@ const AddLoanDialog: React.FunctionComponent<AddLoanDialogProps> = ({ onClose, o
     setLoanAmount("");
     setYears("");
     setAnnualInterestRate("");
-    setStartDate("");
+    setStartDate(undefined);
   }
 
   return (
@@ -96,18 +99,17 @@ const AddLoanDialog: React.FunctionComponent<AddLoanDialogProps> = ({ onClose, o
           type="number"
           value={annualInterestRate}
         />
-        <TextField
-          error={!startDate || !DateTime.fromFormat(startDate, "yyyy-LL-dd").isValid}
+        <DatePicker
+          autoOk
+          error={!startDate}
           fullWidth
-          InputLabelProps={{
-            shrink: true,
-          }}
-          label="Date"
+          label="Starting Month"
           margin="normal"
-          onChange={e => setStartDate(e.target.value)}
+          onChange={e => setStartDate(e?.toJSDate())}
           required
-          type="date"
-          value={startDate}
+          value={startDate ?? null}
+          variant="inline"
+          views={["year", "month"]}
         />
       </DialogContent>
       <DialogActions>

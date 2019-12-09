@@ -7,9 +7,9 @@ import {
   InputAdornment,
   TextField,
 } from "@material-ui/core";
+import { DatePicker } from "@material-ui/pickers";
 import * as React from "react";
 import useLoan, { Loan, LoanUpdateModel } from "../../../hooks/useLoan";
-import { DateTime } from "luxon";
 
 interface EditLoanDialogProps {
   loanId: string;
@@ -21,17 +21,17 @@ interface LoanForm {
   annualInterestRate: string;
   loanAmount: string;
   name: string;
-  startDate: string;
+  startDate?: Date;
   years: string;
 }
 
 interface UseLoanFormResult {
   errors: Readonly<Record<keyof LoanForm, string | undefined>>;
   hasErrors: boolean;
-  values: Readonly<Record<keyof LoanForm, string>>;
+  values: LoanForm;
   getLoan(): LoanUpdateModel;
   reset(): void;
-  setValue(key: keyof LoanForm, value: string): void;
+  setValue(updates: Partial<LoanForm>): void;
 }
 
 function convertLoanToValues(loan: Partial<LoanUpdateModel> = {}): LoanForm {
@@ -39,12 +39,13 @@ function convertLoanToValues(loan: Partial<LoanUpdateModel> = {}): LoanForm {
     annualInterestRate: loan.periodInterestRate ? (loan.periodInterestRate * 12 * 100).toFixed(3) : "",
     loanAmount: loan.loanAmount ? loan.loanAmount.toString() : "",
     name: loan.name || "",
-    startDate: loan.startDate ? DateTime.fromJSDate(loan.startDate).toFormat("yyyy-LL-dd") : "",
+    startDate: loan.startDate,
     years: loan.periods ? (loan.periods / 12).toString() : "",
   };
 }
 
 function getErrors(values: LoanForm): Record<keyof LoanForm, string | undefined> {
+  console.log(values.startDate);
   return {
     annualInterestRate:
       !values.annualInterestRate || isNaN(Number(values.annualInterestRate))
@@ -52,7 +53,7 @@ function getErrors(values: LoanForm): Record<keyof LoanForm, string | undefined>
         : undefined,
     loanAmount: !values.loanAmount || isNaN(Number(values.loanAmount)) ? "Loan Amount is required" : undefined,
     name: !values.name ? "Name is required" : undefined,
-    startDate: !DateTime.fromFormat(values.startDate, "yyyy-LL-dd").isValid ? "Invalid date" : undefined,
+    startDate: !values.startDate ? "Start date is required" : undefined,
     years: !values.years || isNaN(Number(values.years)) ? "Years is required" : undefined,
   };
 }
@@ -78,13 +79,13 @@ function useLoanForm(initialValues: Partial<Loan> = DEFAULT_INITIAL_VALUES): Use
         name: values.name,
         periodInterestRate: Number(values.annualInterestRate) / 12 / 100,
         periods: Number(values.years) * 12,
-        startDate: DateTime.fromFormat(values.startDate, "yyyy-LL-dd", { locale: "UTC" }).toJSDate(),
+        startDate: values.startDate,
       };
     },
     reset: () => {
       setValues(convertLoanToValues(initialValues));
     },
-    setValue: (key, value) => setValues(prev => ({ ...prev, [key]: value })),
+    setValue: updates => setValues(prev => ({ ...prev, ...updates })),
     values,
   };
 }
@@ -110,7 +111,7 @@ const EditLoanDialog: React.FunctionComponent<EditLoanDialogProps> = ({ loanId, 
             helperText={errors.name}
             label="Name"
             margin="normal"
-            onChange={e => setValue("name", e.target.value)}
+            onChange={e => setValue({ name: e.target.value })}
             required
             value={values.name}
           />
@@ -123,7 +124,7 @@ const EditLoanDialog: React.FunctionComponent<EditLoanDialogProps> = ({ loanId, 
             }}
             label="Loan Amount"
             margin="normal"
-            onChange={e => setValue("loanAmount", e.target.value)}
+            onChange={e => setValue({ loanAmount: e.target.value })}
             required
             type="number"
             value={values.loanAmount}
@@ -134,7 +135,7 @@ const EditLoanDialog: React.FunctionComponent<EditLoanDialogProps> = ({ loanId, 
             helperText={errors.years}
             label="Years"
             margin="normal"
-            onChange={e => setValue("years", e.target.value)}
+            onChange={e => setValue({ years: e.target.value })}
             required
             type="number"
             value={values.years}
@@ -148,24 +149,23 @@ const EditLoanDialog: React.FunctionComponent<EditLoanDialogProps> = ({ loanId, 
             }}
             label="Annual Interest Rate"
             margin="normal"
-            onChange={e => setValue("annualInterestRate", e.target.value)}
+            onChange={e => setValue({ annualInterestRate: e.target.value })}
             required
             type="number"
             value={values.annualInterestRate}
           />
-          <TextField
+          <DatePicker
+            autoOk
             error={!!errors.startDate}
             fullWidth
             helperText={errors.startDate}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            label="Date"
+            label="Starting Month"
             margin="normal"
-            onChange={e => setValue("startDate", e.target.value)}
+            onChange={e => setValue({ startDate: e?.toJSDate() })}
             required
-            type="date"
             value={values.startDate}
+            variant="inline"
+            views={["year", "month"]}
           />
         </DialogContent>
       )}

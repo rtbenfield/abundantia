@@ -9,7 +9,8 @@
     "postinstall": "cd ./client && yarn install && cd ../server && yarn install"
   },
   "devDependencies": {
-    "parcel": "^1.12.3",
-    "prettier": "1.18.2"
-  }
+    "parcel": "^1.12.4",
+    "prettier": "1.19.1"
+  },
+  "dependencies": {}
 }

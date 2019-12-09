@@ -1,4 +1,6 @@
-import { createMuiTheme, CssBaseline, MuiThemeProvider } from "@material-ui/core";
+import LuxonUtils from "@date-io/luxon";
+import { CssBaseline } from "@material-ui/core";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import * as Sentry from "@sentry/browser";
 import * as React from "react";
 import { render } from "react-dom";
@@ -20,21 +22,23 @@ Sentry.init({ dsn: process.env.SENTRY_DSN_FRONTEND, environment: process.env.NOD
 
 const App: React.FunctionComponent = () => {
   return (
-    <DocumentTitleProvider defaultTitle="Home" suffix=" - Loan Rover">
-      <UserProvider>
-        <ApolloProvider>
-          <BrowserRouter>
-            <RouteAnalytics />
-            <ThemeProvider>
-              <CssBaseline />
-              <ErrorHandler>
-                <Layout />
-              </ErrorHandler>
-            </ThemeProvider>
-          </BrowserRouter>
-        </ApolloProvider>
-      </UserProvider>
-    </DocumentTitleProvider>
+    <MuiPickersUtilsProvider utils={LuxonUtils}>
+      <DocumentTitleProvider defaultTitle="Home" suffix=" - Loan Rover">
+        <UserProvider>
+          <ApolloProvider>
+            <BrowserRouter>
+              <RouteAnalytics />
+              <ThemeProvider>
+                <CssBaseline />
+                <ErrorHandler>
+                  <Layout />
+                </ErrorHandler>
+              </ThemeProvider>
+            </BrowserRouter>
+          </ApolloProvider>
+        </UserProvider>
+      </DocumentTitleProvider>
+    </MuiPickersUtilsProvider>
   );
 };
 

@@ -12,6 +12,7 @@ import {
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
+import { DatePicker } from "@material-ui/pickers";
 import { Scenario, ScenarioPaymentCreate, ScenarioUpdate } from "../../../hooks/useScenarios";
 import * as React from "react";
 
@@ -110,25 +111,21 @@ const EditScenarioForm: React.FunctionComponent<EditScenarioFormProps> = ({ onCa
                 />
               </TableCell>
               <TableCell>
-                <TextField
+                <DatePicker
+                  autoOk
+                  format="MM/dd/yyyy"
                   fullWidth
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  onChange={e => updatePayment(i, { from: new Date(e.target.value) })}
-                  type="date"
-                  value={p.from.toISOString().substr(0, 10)}
+                  onChange={e => updatePayment(i, { from: e?.toJSDate() ?? undefined })}
+                  value={p.from}
                 />
               </TableCell>
               <TableCell>
-                <TextField
+                <DatePicker
+                  autoOk
+                  format="MM/dd/yyyy"
                   fullWidth
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  onChange={e => updatePayment(i, { to: new Date(e.target.value) })}
-                  type="date"
-                  value={p.to ? p.to.toISOString().substr(0, 10) : ""}
+                  onChange={e => updatePayment(i, { to: e?.toJSDate() ?? undefined })}
+                  value={p.to}
                 />
               </TableCell>
               <TableCell>
