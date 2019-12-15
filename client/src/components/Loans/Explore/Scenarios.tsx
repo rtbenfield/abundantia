@@ -23,7 +23,7 @@ interface ScenarioProps {
   onRemoveScenario(scenario: Scenario): void;
 }
 
-const Scenarios: React.FunctionComponent<ScenarioProps> = ({
+const Scenarios: React.FC<ScenarioProps> = ({
   loan,
   onAddScenario,
   onEditScenario,

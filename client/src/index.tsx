@@ -21,7 +21,7 @@ ReactGA.initialize(process.env.GOOGLE_ANALYTICS_TRACKING_ID || "", {
 
 Sentry.init({ dsn: process.env.SENTRY_DSN_FRONTEND, environment: process.env.NODE_ENV || "development" });
 
-const App: React.FunctionComponent = () => {
+const App: React.FC = () => {
   return (
     <MuiPickersUtilsProvider utils={LuxonUtils}>
       <DocumentTitleProvider defaultTitle="Home" suffix=" - Loan Rover">

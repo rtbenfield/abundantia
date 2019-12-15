@@ -7,7 +7,7 @@ interface ListItemLinkProps {
   to: string;
 }
 
-const ListItemLink: React.FunctionComponent<ListItemLinkProps> = ({ children, to }) => {
+const ListItemLink: React.FC<ListItemLinkProps> = ({ children, to }) => {
   return (
     <Route path={to}>
       {({ match }) => (

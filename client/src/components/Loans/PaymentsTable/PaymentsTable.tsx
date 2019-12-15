@@ -16,7 +16,7 @@ interface PaymentsTableProps {
   payments: readonly Payment[];
 }
 
-const LoanOverview: React.FunctionComponent<PaymentsTableProps> = ({ payments }) => {
+const LoanOverview: React.FC<PaymentsTableProps> = ({ payments }) => {
   const classes = useStyles();
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [page, setPage] = React.useState(0);

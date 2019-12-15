@@ -9,7 +9,7 @@ interface ContentProps {
   className?: string;
 }
 
-const Content: React.FunctionComponent<ContentProps> = ({ className }) => {
+const Content: React.FC<ContentProps> = ({ className }) => {
   const classes = useStyles();
   return (
     <main className={classNames(classes.root, className)}>

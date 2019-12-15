@@ -5,7 +5,7 @@ interface LoadingIndicatorProps {
   size: "fill";
 }
 
-const LoadingIndicator: React.FunctionComponent<LoadingIndicatorProps> = () => {
+const LoadingIndicator: React.FC<LoadingIndicatorProps> = () => {
   const classes = useStyles();
   return (
     <div className={classes.root}>

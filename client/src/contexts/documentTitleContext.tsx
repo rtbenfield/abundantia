@@ -14,7 +14,7 @@ interface DocumentTitleProviderProps {
   suffix?: string;
 }
 
-export const DocumentTitleProvider: React.FunctionComponent<DocumentTitleProviderProps> = ({
+export const DocumentTitleProvider: React.FC<DocumentTitleProviderProps> = ({
   children,
   defaultTitle = "",
   prefix = "",

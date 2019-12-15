@@ -17,7 +17,7 @@ interface AddPaymentDialogProps {
   open: boolean;
 }
 
-const AddPaymentDialog: React.FunctionComponent<AddPaymentDialogProps> = ({ loanId, onClose, open }) => {
+const AddPaymentDialog: React.FC<AddPaymentDialogProps> = ({ loanId, onClose, open }) => {
   const [date, setDate] = React.useState<string>(getDefaultDate);
   const [interest, setInterest] = React.useState<string>("");
   const [note, setNote] = React.useState<string>("");

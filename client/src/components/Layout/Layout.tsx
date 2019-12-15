@@ -6,7 +6,7 @@ import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 import { useUserContext } from "../../contexts/userContext";
 
-const Layout: React.FunctionComponent = () => {
+const Layout: React.FC = () => {
   const classes = useStyles();
   const userContext = useUserContext();
   return (

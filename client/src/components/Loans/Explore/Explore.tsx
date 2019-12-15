@@ -13,7 +13,7 @@ interface ExploreProps {
   loanId: string;
 }
 
-const Explore: React.FunctionComponent<ExploreProps> = ({ loanId }) => {
+const Explore: React.FC<ExploreProps> = ({ loanId }) => {
   useDocumentTitle("Explore");
   const { error, isLoading, loan } = useLoan(loanId);
 
@@ -28,7 +28,7 @@ const Explore: React.FunctionComponent<ExploreProps> = ({ loanId }) => {
   }
 };
 
-const Explore2: React.FunctionComponent<{ loan: Loan }> = ({ loan }) => {
+const Explore2: React.FC<{ loan: Loan }> = ({ loan }) => {
   useDocumentTitle(`Explore ${loan.name}`);
   const classes = useStyles();
   const amortizationSchedule = useAmortizationTransform(loan);

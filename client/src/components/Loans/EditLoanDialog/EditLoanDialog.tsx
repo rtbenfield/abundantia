@@ -11,7 +11,7 @@ interface EditLoanDialogProps {
   onClose(): void;
 }
 
-const EditLoanDialog: React.FunctionComponent<EditLoanDialogProps> = ({ loanId, onClose, open }) => {
+const EditLoanDialog: React.FC<EditLoanDialogProps> = ({ loanId, onClose, open }) => {
   const { captureError } = useErrorHandler();
   const { enqueueSnackbar } = useSnackbar();
   const { isLoading, loan, updateLoan } = useLoan(loanId);

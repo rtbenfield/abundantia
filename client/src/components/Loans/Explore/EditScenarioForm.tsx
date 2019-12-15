@@ -22,7 +22,7 @@ interface EditScenarioFormProps {
   onSave(scenario: ScenarioUpdate): void;
 }
 
-const EditScenarioForm: React.FunctionComponent<EditScenarioFormProps> = ({ onCancel, onSave, scenario }) => {
+const EditScenarioForm: React.FC<EditScenarioFormProps> = ({ onCancel, onSave, scenario }) => {
   const [additionalPayments, setAdditionalPayments] = React.useState<readonly ScenarioPaymentCreate[]>([]);
   const [name, setName] = React.useState<string>("");
 

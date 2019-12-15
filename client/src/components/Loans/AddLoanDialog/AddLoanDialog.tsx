@@ -12,7 +12,7 @@ interface AddLoanDialogProps {
   onLoanAdded(loan: { id: string }): void;
 }
 
-const AddLoanDialog: React.FunctionComponent<AddLoanDialogProps> = ({ onClose, onLoanAdded, open }) => {
+const AddLoanDialog: React.FC<AddLoanDialogProps> = ({ onClose, onLoanAdded, open }) => {
   useDocumentTitle("Add Loan");
   const { captureError } = useErrorHandler();
   const { enqueueSnackbar } = useSnackbar();

@@ -15,7 +15,7 @@ interface LoanInfoCardProps {
   loan: Loan;
 }
 
-const LoanInfoCard: React.FunctionComponent<LoanInfoCardProps> = ({
+const LoanInfoCard: React.FC<LoanInfoCardProps> = ({
   deletePath,
   editPath,
   explorePath,

@@ -10,7 +10,7 @@ interface NavbarProps {
   className?: string;
 }
 
-const Navbar: React.FunctionComponent<NavbarProps> = ({ className }) => {
+const Navbar: React.FC<NavbarProps> = ({ className }) => {
   const classes = useStyles();
   const userContext = useUserContext();
   return (

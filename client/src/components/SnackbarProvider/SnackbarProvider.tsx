@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const CustomSnackbarProvider: React.FunctionComponent<SnackbarProviderProps> = ({ children, ...props }) => {
+const CustomSnackbarProvider: React.FC<SnackbarProviderProps> = ({ children, ...props }) => {
   const classes = useStyles();
   return (
     <SnackbarProvider classes={classes} {...props}>

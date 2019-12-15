@@ -7,7 +7,7 @@ interface LoanFormProps {
   loanForm: UseLoanFormResult;
 }
 
-const LoanForm: React.FunctionComponent<LoanFormProps> = ({ loanForm }) => {
+const LoanForm: React.FC<LoanFormProps> = ({ loanForm }) => {
   const { errors, setValue, values } = loanForm;
 
   return (

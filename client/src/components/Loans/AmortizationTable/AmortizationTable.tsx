@@ -19,7 +19,7 @@ interface AmortizationTableProps {
   loan: Loan;
 }
 
-const AmortizationTable: React.FunctionComponent<AmortizationTableProps> = ({ loan }) => {
+const AmortizationTable: React.FC<AmortizationTableProps> = ({ loan }) => {
   const classes = useStyles();
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [page, setPage] = React.useState(0);

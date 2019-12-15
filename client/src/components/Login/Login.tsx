@@ -6,7 +6,7 @@ import GoogleLogin from "react-google-login";
 import { useUserContext } from "../../contexts/userContext";
 import useDocumentTitle from "../../hooks/useDocumentTitle";
 
-const Login: React.FunctionComponent = () => {
+const Login: React.FC = () => {
   useDocumentTitle("Login");
   const theme = useTheme();
   const userContext = useUserContext();

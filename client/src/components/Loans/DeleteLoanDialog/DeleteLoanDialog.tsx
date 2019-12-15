@@ -11,7 +11,7 @@ interface DeleteLoanDialogProps {
   onLoanDeleted(): void;
 }
 
-const DeleteLoanDialog: React.FunctionComponent<DeleteLoanDialogProps> = ({ loanId, onClose, onLoanDeleted, open }) => {
+const DeleteLoanDialog: React.FC<DeleteLoanDialogProps> = ({ loanId, onClose, onLoanDeleted, open }) => {
   const { captureError } = useErrorHandler();
   const { deleteLoan, error, isLoading, loans } = useLoans();
   const { enqueueSnackbar } = useSnackbar();

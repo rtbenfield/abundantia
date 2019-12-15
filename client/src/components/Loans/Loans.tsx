@@ -13,7 +13,7 @@ const Transition = React.forwardRef<unknown, TransitionProps>(function Transitio
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const Loans: React.FunctionComponent<RouteComponentProps> = ({ history, match }) => {
+const Loans: React.FC<RouteComponentProps> = ({ history, match }) => {
   return (
     <Switch>
       <Route path={`${match.path}/add`}>

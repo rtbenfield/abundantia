@@ -3,7 +3,7 @@ import ApolloClient from "apollo-boost";
 import * as React from "react";
 import { useUserContext } from "../contexts/userContext";
 
-export const ApolloProvider: React.FunctionComponent = ({ children }) => {
+export const ApolloProvider: React.FC = ({ children }) => {
   const { connectionString, user } = useUserContext();
 
   const client = React.useMemo(() => {

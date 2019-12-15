@@ -12,7 +12,7 @@ ReactGA.set({
 });
 Sentry.setTag("theme", darkModePreferred ? "dark" : "light");
 
-const ThemeProvider: React.FunctionComponent = ({ children }) => {
+const ThemeProvider: React.FC = ({ children }) => {
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />

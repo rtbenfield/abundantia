@@ -10,7 +10,7 @@ interface ComparisonChartProps {
   title: string;
 }
 
-const ComparisonChart: React.FunctionComponent<ComparisonChartProps> = ({ baseScenario, field, scenarios, title }) => {
+const ComparisonChart: React.FC<ComparisonChartProps> = ({ baseScenario, field, scenarios, title }) => {
   const theme = useTheme();
   const data = React.useMemo(() => {
     return baseScenario.map((base, i) => {

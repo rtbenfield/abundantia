@@ -3,7 +3,7 @@ import useDocumentTitle from "../../hooks/useDocumentTitle";
 import useLoans from "../../hooks/useLoans";
 import LoadingIndicator from "../LoadingIndicator";
 
-const Home: React.FunctionComponent = () => {
+const Home: React.FC = () => {
   useDocumentTitle("Home");
   const { isLoading } = useLoans();
   if (isLoading) {

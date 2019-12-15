@@ -16,7 +16,7 @@ interface LoanOverviewProps {
   loanId: string;
 }
 
-const LoanOverview: React.FunctionComponent<LoanOverviewProps> = ({ deletePath, editPath, explorePath, loanId }) => {
+const LoanOverview: React.FC<LoanOverviewProps> = ({ deletePath, editPath, explorePath, loanId }) => {
   useDocumentTitle("Loan");
   const classes = useStyles();
   const [tab, setTab] = React.useState<"amortization" | "payments">("payments");

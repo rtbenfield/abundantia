@@ -20,7 +20,7 @@ export interface UserInfo {
 const userContext = React.createContext<Readonly<UserContext> | null>(null);
 userContext.displayName = "UserContext";
 
-export const UserProvider: React.FunctionComponent = ({ children }) => {
+export const UserProvider: React.FC = ({ children }) => {
   const [user, setUser] = React.useState<Readonly<UserInfo> | undefined>();
 
   const value = React.useMemo<UserContext>(() => {

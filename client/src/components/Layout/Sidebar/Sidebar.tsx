@@ -9,7 +9,7 @@ interface SidebarProps {
   className?: string;
 }
 
-const Sidebar: React.FunctionComponent<SidebarProps> = ({ className }) => {
+const Sidebar: React.FC<SidebarProps> = ({ className }) => {
   const classes = useStyles();
   const { error, isLoading, loans } = useLoans();
   if (error) {
