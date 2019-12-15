@@ -117,15 +117,19 @@ const EditScenarioForm: React.FunctionComponent<EditScenarioFormProps> = ({ onCa
                   fullWidth
                   onChange={e => updatePayment(i, { from: e?.toJSDate() ?? undefined })}
                   value={p.from}
+                  variant="dialog"
                 />
               </TableCell>
               <TableCell>
                 <DatePicker
                   autoOk
+                  clearable
+                  emptyLabel="Active"
                   format="MM/dd/yyyy"
                   fullWidth
                   onChange={e => updatePayment(i, { to: e?.toJSDate() ?? undefined })}
-                  value={p.to}
+                  value={p.to ?? null}
+                  variant="dialog"
                 />
               </TableCell>
               <TableCell>

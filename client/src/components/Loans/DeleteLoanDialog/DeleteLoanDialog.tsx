@@ -1,7 +1,8 @@
 import { Button, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText } from "@material-ui/core";
+import { useSnackbar } from "notistack";
 import * as React from "react";
-import useDocumentTitle from "../../../hooks/useDocumentTitle";
 import useLoans from "../../../hooks/useLoans";
+import { useErrorHandler } from "../../ErrorHandler";
 
 interface DeleteLoanDialogProps {
   loanId: string;
@@ -11,7 +12,10 @@ interface DeleteLoanDialogProps {
 }
 
 const DeleteLoanDialog: React.FunctionComponent<DeleteLoanDialogProps> = ({ loanId, onClose, onLoanDeleted, open }) => {
+  const { captureError } = useErrorHandler();
   const { deleteLoan, error, isLoading, loans } = useLoans();
+  const { enqueueSnackbar } = useSnackbar();
+
   if (error) {
     throw error;
   } else if (isLoading) {
@@ -24,8 +28,16 @@ const DeleteLoanDialog: React.FunctionComponent<DeleteLoanDialogProps> = ({ loan
   }
 
   async function handleConfirm() {
-    await deleteLoan(loanId);
-    onLoanDeleted();
+    try {
+      onLoanDeleted();
+      await deleteLoan(loanId);
+      enqueueSnackbar(`${loanInfo?.name ?? "Loan"} deleted`, {
+        variant: "success",
+      });
+    } catch (err) {
+      captureError(err);
+      enqueueSnackbar(`Error deleting ${loanInfo?.name ?? "loan"}`, { variant: "error" });
+    }
   }
 
   return (

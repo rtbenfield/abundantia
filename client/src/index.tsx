@@ -11,7 +11,8 @@ import Layout from "./components/Layout";
 import RouteAnalytics from "./components/RouteAnalytics";
 import { DocumentTitleProvider } from "./contexts/documentTitleContext";
 import { UserProvider } from "./contexts/userContext";
-import ErrorHandler from "./components/ErrorHandler/ErrorHandler";
+import ErrorHandler from "./components/ErrorHandler";
+import SnackbarProvider from "./components/SnackbarProvider";
 import ThemeProvider from "./components/ThemeProvider";
 
 ReactGA.initialize(process.env.GOOGLE_ANALYTICS_TRACKING_ID || "", {
@@ -30,9 +31,11 @@ const App: React.FunctionComponent = () => {
               <RouteAnalytics />
               <ThemeProvider>
                 <CssBaseline />
-                <ErrorHandler>
-                  <Layout />
-                </ErrorHandler>
+                <SnackbarProvider anchorOrigin={{ horizontal: "right", vertical: "bottom" }} maxSnack={1}>
+                  <ErrorHandler>
+                    <Layout />
+                  </ErrorHandler>
+                </SnackbarProvider>
               </ThemeProvider>
             </BrowserRouter>
           </ApolloProvider>

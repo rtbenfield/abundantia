@@ -2,7 +2,6 @@ import { Button, Card, CardActions, CardContent, List, ListItem, ListItemText, m
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import ExploreIcon from "@material-ui/icons/Explore";
-import { DateTime } from "luxon";
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { Loan } from "../../../hooks/useLoan";
@@ -41,7 +40,10 @@ const LoanInfoCard: React.FunctionComponent<LoanInfoCardProps> = ({
             <ListItemText primary="Years" secondary={numberFormat.format(loan.periods / 12)} />
           </ListItem>
           <ListItem component="div">
-            <ListItemText primary="Annual interest rate" secondary={percentFormat.format(loan.periodInterestRate * 12)} />
+            <ListItemText
+              primary="Annual interest rate"
+              secondary={percentFormat.format(loan.periodInterestRate * 12)}
+            />
           </ListItem>
           <ListItem component="div">
             <ListItemText primary="Start date" secondary={dateFormat.format(loan.startDate)} />
@@ -86,8 +88,7 @@ const currencyFormat = new Intl.NumberFormat("en-US", {
 });
 
 const dateFormat = new Intl.DateTimeFormat("en-US", {
-  day: "numeric",
-  month: "numeric",
+  month: "long",
   timeZone: "UTC",
   year: "numeric",
 });

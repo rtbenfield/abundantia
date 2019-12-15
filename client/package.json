@@ -20,6 +20,7 @@
     "classnames": "^2.2.6",
     "graphql": "^14.4.2",
     "luxon": "^1.17.2",
+    "notistack": "^0.9.7",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
