@@ -8,7 +8,6 @@ import {
   TablePagination,
   makeStyles,
 } from "@material-ui/core";
-import { DateTime } from "luxon";
 import * as React from "react";
 import { Payment } from "../../../hooks/useLoan";
 
@@ -34,7 +33,7 @@ const LoanOverview: React.FC<PaymentsTableProps> = ({ payments }) => {
         <TableBody>
           {payments.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(p => (
             <TableRow key={p.id}>
-              <TableCell>{dateFormat.format(DateTime.fromISO(p.date).toJSDate())}</TableCell>
+              <TableCell>{dateFormat.format(p.date)}</TableCell>
               <TableCell align="right">{currencyFormat.format(p.interest + p.principal)}</TableCell>
               <TableCell align="right">{currencyFormat.format(p.principal)}</TableCell>
               <TableCell align="right">{currencyFormat.format(p.interest)}</TableCell>

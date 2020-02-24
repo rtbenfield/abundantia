@@ -1,0 +1,29 @@
+schema: https://loan-rover-8d8400b445.herokuapp.com/rtbenfield_gmail_com/dev
+documents: ./src/**/*.gql
+generates:
+  ./src/graphtypes.generated.ts:
+    plugins:
+      - typescript
+  ./src/graphmodules.generated.d.ts:
+    plugins:
+      - typescript-graphql-files-modules
+  ./src:
+    preset: near-operation-file
+    presetConfig:
+      extension: .generated.ts
+      baseTypesPath: graphtypes.generated.ts
+    plugins:
+      - typescript-operations
+      - typescript-react-apollo
+config:
+  documentMode: documentNode
+  immutableTypes: true
+  importDocumentNodeExternallyFrom: near-operation-file
+  scalars:
+    DateTime: string
+  withComponent: false
+  withHOC: false
+  withHooks: true
+hooks:
+  afterAllFileWrite:
+    - prettier --write

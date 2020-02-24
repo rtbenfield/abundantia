@@ -1,7 +1,14 @@
-export { AmortizationPayment, Loan } from "../../hooks/useLoan";
+export { Loan } from "../../hooks/useLoan";
 
-export interface QueryResults {
-  scenarios: readonly ScenarioModel[];
+export interface AmortizationPayment {
+  amount: number;
+  balance: number;
+  date: Date;
+  interest: number;
+  interestToDate: number;
+  paymentNumber: number;
+  principal: number;
+  principalToDate: number;
 }
 
 export interface Scenario extends ScenarioModel {
@@ -10,12 +17,6 @@ export interface Scenario extends ScenarioModel {
 
 export interface ScenarioCreate {
   additionalPayments: readonly ScenarioPaymentCreate[];
-  name: string;
-}
-
-export interface ScenarioUpdate {
-  additionalPayments: readonly ScenarioPaymentCreate[];
-  id: string;
   name: string;
 }
 

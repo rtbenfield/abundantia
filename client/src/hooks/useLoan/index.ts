@@ -1,7 +1,6 @@
-import { useMutation, useQuery } from "@apollo/react-hooks";
 import { useMemo } from "react";
-import LoanQuery from "./LoanQuery.gql";
-import UpdateLoanMutation from "./UpdateLoanMutation.gql";
+import { useLoanQuery } from "./LoanQuery.generated";
+import { useUpdateLoanMutation } from "./UpdateLoanMutation.generated";
 
 export interface AmortizationPayment {
   amount: number;
@@ -21,32 +20,7 @@ export interface Loan {
   payments: readonly Payment[];
   periodInterestRate: number;
   periods: number;
-  periodType: PeriodType;
   startDate: Date;
-}
-
-interface LoanQueryResult {
-  loan: {
-    id: string;
-    loanAmount: number;
-    name: string;
-    payments: readonly Payment[];
-    periodInterestRate: number;
-    periods: number;
-    periodType: PeriodType;
-    startDate: string;
-  };
-}
-
-interface LoanUpdateInput {
-  changes: {
-    loanAmount?: number;
-    name?: string;
-    periodInterestRate?: number;
-    periods?: number;
-    startDate?: Date;
-  };
-  id: string;
 }
 
 export interface LoanUpdateModel {
@@ -58,7 +32,7 @@ export interface LoanUpdateModel {
 }
 
 export interface Payment {
-  date: string;
+  date: Date;
   id: string;
   interest: number;
   note: string;
@@ -78,18 +52,23 @@ export interface UseLoanResult {
 }
 
 export default function useLoan(id: string): UseLoanResult {
-  const { data, error, loading } = useQuery<LoanQueryResult>(LoanQuery, {
-    variables: {
-      id,
-    },
+  const { data, error, loading } = useLoanQuery({
+    variables: { id },
   });
-  const [updateLoan] = useMutation<{}, LoanUpdateInput>(UpdateLoanMutation);
+  const [updateLoan] = useUpdateLoanMutation();
+
   const loan = useMemo<Loan | undefined>(() => {
     if (data && data.loan) {
       return {
         ...data.loan,
+        payments: (data.loan.payments ?? []).map(p => {
+          return {
+            ...p,
+            date: new Date(p.date),
+          };
+        }),
         startDate: new Date(data.loan.startDate),
-      };
+      } as Loan;
     } else {
       return undefined;
     }
@@ -102,8 +81,11 @@ export default function useLoan(id: string): UseLoanResult {
     updateLoan: async changes => {
       await updateLoan({
         variables: {
+          changes: {
+            ...changes,
+            startDate: changes.startDate?.toISOString(),
+          },
           id,
-          changes,
         },
       });
     },

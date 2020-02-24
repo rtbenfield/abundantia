@@ -1,7 +1,8 @@
-import { useMutation, useQuery } from "@apollo/react-hooks";
-import CreateLoanMutation from "./CreateLoanMutation.gql";
-import DeleteLoanMutation from "./DeleteLoanMutation.gql";
+import { PeriodType } from "../../graphtypes.generated";
 import LoansQuery from "./LoansQuery.gql";
+import { useCreateLoanMutation } from "./CreateLoanMutation.generated";
+import { useDeleteLoanMutation } from "./DeleteLoanMutation.generated";
+import { useLoansQuery } from "./LoansQuery.generated";
 
 export interface Loan {
   id: string;
@@ -17,25 +18,6 @@ export interface LoanCreateModel {
   startDate: Date;
 }
 
-interface LoanCreateInput {
-  loan: {
-    loanAmount: number;
-    name: string;
-    periodInterestRate: number;
-    periods: number;
-    startDate: Date;
-  };
-}
-
-interface LoanQueryResult {
-  loans: readonly Loan[];
-}
-
-export enum PeriodType {
-  monthly = "Monthly",
-  yearly = "Yearly",
-}
-
 export interface UseLoansResult {
   error?: Error;
   isLoading: boolean;
@@ -45,29 +27,24 @@ export interface UseLoansResult {
 }
 
 export default function useLoans(): UseLoansResult {
-  const { data, error, loading } = useQuery<LoanQueryResult>(LoansQuery);
-  const [createLoan] = useMutation<{ createLoan: { id: string } }, LoanCreateInput>(CreateLoanMutation, {
+  const { data, error, loading } = useLoansQuery();
+  const [createLoan] = useCreateLoanMutation({
     awaitRefetchQueries: true,
-    refetchQueries: [
-      {
-        query: LoansQuery,
-      },
-    ],
+    refetchQueries: [{ query: LoansQuery }],
   });
-  const [deleteLoan] = useMutation<{}, { id: string }>(DeleteLoanMutation, {
+  const [deleteLoan] = useDeleteLoanMutation({
     awaitRefetchQueries: true,
-    refetchQueries: [
-      {
-        query: LoansQuery,
-      },
-    ],
+    refetchQueries: [{ query: LoansQuery }],
   });
 
   return {
     createLoan: async loan => {
       const result = await createLoan({
         variables: {
-          loan,
+          loan: {
+            ...loan,
+            startDate: loan.startDate.toISOString(),
+          },
         },
       });
       if (result && result.data) {
@@ -85,6 +62,6 @@ export default function useLoans(): UseLoansResult {
     },
     error,
     isLoading: loading,
-    loans: data && data.loans ? data.loans : [],
+    loans: (data?.loans as readonly Loan[]) ?? [],
   };
 }

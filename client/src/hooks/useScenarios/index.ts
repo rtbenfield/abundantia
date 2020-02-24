@@ -1,11 +1,11 @@
-import { useQuery, useMutation } from "@apollo/react-hooks";
 import { useMemo } from "react";
-import AddScenarioMutation from "./AddScenarioMutation.gql";
-import RemoveScenarioMutation from "./RemoveScenarioMutation.gql";
 import ScenariosQuery from "./ScenariosQuery.gql";
-import { Loan, QueryResults, Scenario, ScenarioCreate, ScenarioModel, ScenarioPaymentCreate } from "./types";
-import UpdateScenarioMutation from "./UpdateScenarioMutation.gql";
+import { Loan, Scenario, ScenarioCreate, ScenarioModel } from "./types";
 import { makeAmortizationSchedule } from "./utils";
+import { useScenariosQuery } from "./ScenariosQuery.generated";
+import { useAddScenarioMutation } from "./AddScenarioMutation.generated";
+import { useRemoveScenarioMutation } from "./RemoveScenarioMutation.generated";
+import { useUpdateScenarioMutation } from "./UpdateScenarioMutation.generated";
 
 export * from "./types";
 
@@ -18,44 +18,11 @@ export interface UseScenariosResult {
   updateScenario(scenario: ScenarioModel): void;
 }
 
-interface ScenarioCreateModel {
-  additionalPayments: {
-    create: readonly ScenarioPaymentCreate[];
-  };
-  loan: {
-    connect: {
-      id: string;
-    };
-  };
-  name: string;
-}
-
-interface ScenarioUpdateModel {
-  additionalPayments?: {
-    create: readonly ScenarioPaymentCreate[];
-  };
-  name?: string;
-}
-
 export default function useScenarios(loan: Loan): UseScenariosResult {
-  const { data, error, loading } = useQuery<QueryResults>(ScenariosQuery, {
-    variables: {
-      loanId: loan.id,
-    },
+  const { data, error, loading } = useScenariosQuery({
+    variables: { loanId: loan.id },
   });
-  const [addScenario] = useMutation<{ createScenario: { id: string } }, { scenario: ScenarioCreateModel }>(
-    AddScenarioMutation,
-    {
-      awaitRefetchQueries: true,
-      refetchQueries: [
-        {
-          query: ScenariosQuery,
-          variables: { loanId: loan.id },
-        },
-      ],
-    },
-  );
-  const [removeScenario] = useMutation<{}, { id: string }>(RemoveScenarioMutation, {
+  const [addScenario] = useAddScenarioMutation({
     awaitRefetchQueries: true,
     refetchQueries: [
       {
@@ -64,7 +31,16 @@ export default function useScenarios(loan: Loan): UseScenariosResult {
       },
     ],
   });
-  const [updateScenario] = useMutation<{}, { id: string; scenario: ScenarioUpdateModel }>(UpdateScenarioMutation, {
+  const [removeScenario] = useRemoveScenarioMutation({
+    awaitRefetchQueries: true,
+    refetchQueries: [
+      {
+        query: ScenariosQuery,
+        variables: { loanId: loan.id },
+      },
+    ],
+  });
+  const [updateScenario] = useUpdateScenarioMutation({
     awaitRefetchQueries: true,
     refetchQueries: [
       {
@@ -80,16 +56,17 @@ export default function useScenarios(loan: Loan): UseScenariosResult {
     }
 
     return data.scenarios.map<Scenario>(s => {
-      const fixedPayments = s.additionalPayments.map(p => ({
-        ...p,
-        from: new Date(p.from),
-        to: p.to ? new Date(p.to) : undefined,
-      }));
+      const fixedPayments =
+        s?.additionalPayments?.map(p => ({
+          ...p,
+          from: new Date(p.from),
+          to: p.to ? new Date(p.to) : undefined,
+        })) ?? [];
       const amortizationSchedule = makeAmortizationSchedule(loan, {
         additionalPayments: fixedPayments,
       });
       return {
-        ...s,
+        ...s!,
         additionalPayments: fixedPayments,
         amortizationSchedule,
       };
@@ -103,9 +80,9 @@ export default function useScenarios(loan: Loan): UseScenariosResult {
           scenario: {
             additionalPayments: {
               create: scenario.additionalPayments.map(p => ({
-                from: p.from,
+                from: p.from.toISOString(),
                 principalAmount: p.principalAmount,
-                to: p.to,
+                to: p.to?.toISOString(),
               })),
             },
             loan: {
@@ -139,9 +116,9 @@ export default function useScenarios(loan: Loan): UseScenariosResult {
           scenario: {
             additionalPayments: {
               create: scenario.additionalPayments.map(p => ({
-                from: p.from,
+                from: p.from.toISOString(),
                 principalAmount: p.principalAmount,
-                to: p.to,
+                to: p.to?.toISOString(),
               })),
             },
             name: scenario.name,
