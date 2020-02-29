@@ -6,7 +6,7 @@
   "scripts": {
     "build": "parcel build ./client/src/index.html --out-dir ./client/dist",
     "start": "node ./server/index.js",
-    "postinstall": "cd ./client && yarn install && yarn prestart && cd ../server && yarn install"
+    "postinstall": "cd ./client && yarn install && cd ../server && yarn install"
   },
   "devDependencies": {
     "parcel": "^1.12.4",

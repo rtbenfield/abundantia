@@ -68,7 +68,3 @@ dist
 
 # VS Code
 .vscode
-
-# Generated TypeScript files
-*.generated.ts
-*.generated.d.ts
