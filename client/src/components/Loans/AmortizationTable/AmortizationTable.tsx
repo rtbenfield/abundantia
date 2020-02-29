@@ -1,18 +1,7 @@
-import {
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  IconButton,
-  TableFooter,
-  TablePagination,
-} from "@material-ui/core";
-import DoneIcon from "@material-ui/icons/Done";
-import { DateTime } from "luxon";
+import { Table, TableHead, TableRow, TableCell, TableBody, TableFooter, TablePagination } from "@material-ui/core";
 import * as React from "react";
 import { Loan } from "../../../hooks/useLoan";
-import { useAmortizationTransform, useCreatePayment } from "../hooks";
+import { useAmortizationTransform } from "../hooks";
 import { makeStyles } from "@material-ui/styles";
 
 interface AmortizationTableProps {
@@ -23,7 +12,6 @@ const AmortizationTable: React.FC<AmortizationTableProps> = ({ loan }) => {
   const classes = useStyles();
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [page, setPage] = React.useState(0);
-  const [createPayment, { loading }] = useCreatePayment();
   const paymentSchedule = useAmortizationTransform(loan);
 
   return (
@@ -43,10 +31,7 @@ const AmortizationTable: React.FC<AmortizationTableProps> = ({ loan }) => {
         <TableBody>
           {paymentSchedule.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((p, i, a) => {
             const next = a[i + 1];
-            const paid = loan.payments.some(x => {
-              const date = DateTime.fromISO(x.date).toJSDate();
-              return date >= p.date && (!next || date < next.date);
-            });
+            const paid = loan.payments.some(x => x.date >= p.date && (!next || x.date < next.date));
 
             return (
               <TableRow key={p.paymentNumber}>
