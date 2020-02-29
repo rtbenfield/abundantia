@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { PeriodType } from "../../../graphtypes.generated";
 import { Loan } from "../../../hooks/useLoan";
-import { LoanCreateModel, PeriodType } from "../../../hooks/useLoans";
+import { LoanCreateModel } from "../../../hooks/useLoans";
 
 export interface LoanForm {
   annualInterestRate: string;
@@ -67,7 +68,7 @@ export function useLoanForm(initialValues: Partial<Loan> = DEFAULT_INITIAL_VALUE
         name: values.name,
         periodInterestRate: Number(values.annualInterestRate) / 12 / 100,
         periods: Number(values.years) * 12,
-        periodType: PeriodType.monthly,
+        periodType: PeriodType.Monthly,
         startDate: values.startDate!,
       };
     },

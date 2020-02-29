@@ -27,12 +27,13 @@ const ComparisonChart: React.FC<ComparisonChartProps> = ({ baseScenario, field, 
       };
     });
   }, [baseScenario, field, scenarios]);
+  const [position, setPosition] = React.useState<{ x: number; y: number } | null>(null);
 
   return (
     <Card>
       <CardHeader title={title} titleTypographyProps={{ variant: "h6" }} />
       <ResponsiveContainer height={240}>
-        <LineChart data={data} syncId="explore">
+        <LineChart onClick={e => setPosition({ x: e.chartX, y: e.chartY })} data={data} syncId="explore">
           <Tooltip
             contentStyle={{
               backgroundColor: theme.palette.background.paper,
@@ -46,6 +47,8 @@ const ComparisonChart: React.FC<ComparisonChartProps> = ({ baseScenario, field, 
             formatter={(value, name) => [currencyFormat.format(+value), name]}
             labelFormatter={value => dateFormat.format(new Date(value))}
             labelStyle={theme.typography.caption}
+            active={!!position}
+            position={position ?? undefined}
           />
           <XAxis dataKey="date" hide />
           <YAxis domain={[0, "dataMax"]} hide type="number" />
@@ -80,7 +83,17 @@ const ComparisonChart: React.FC<ComparisonChartProps> = ({ baseScenario, field, 
 
 export default ComparisonChart;
 
-const colors: readonly string[] = ["#B48EAD", "#D08770", "#A3BE8C", "#EBCB8B", "#8FBCBB", "#88C0D0", "#88C0D0", "#5E81AC", "#BF616A"];
+const colors: readonly string[] = [
+  "#B48EAD",
+  "#D08770",
+  "#A3BE8C",
+  "#EBCB8B",
+  "#8FBCBB",
+  "#88C0D0",
+  "#88C0D0",
+  "#5E81AC",
+  "#BF616A",
+];
 
 const currencyFormat = new Intl.NumberFormat("en-US", {
   currency: "USD",

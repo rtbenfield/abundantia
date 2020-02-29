@@ -1,40 +1,40 @@
 export { Loan } from "../../hooks/useLoan";
 
 export interface AmortizationPayment {
-  amount: number;
-  balance: number;
-  date: Date;
-  interest: number;
-  interestToDate: number;
-  paymentNumber: number;
-  principal: number;
-  principalToDate: number;
+  readonly amount: number;
+  readonly balance: number;
+  readonly date: Date;
+  readonly interest: number;
+  readonly interestToDate: number;
+  readonly paymentNumber: number;
+  readonly principal: number;
+  readonly principalToDate: number;
 }
 
 export interface Scenario extends ScenarioModel {
-  amortizationSchedule: readonly AmortizationPayment[];
+  readonly amortizationSchedule: readonly AmortizationPayment[];
 }
 
 export interface ScenarioCreate {
-  additionalPayments: readonly ScenarioPaymentCreate[];
-  name: string;
+  readonly additionalPayments: readonly ScenarioPaymentCreate[];
+  readonly name: string;
 }
 
 export interface ScenarioModel {
-  additionalPayments: readonly ScenarioPayment[];
-  id: string;
-  name: string;
+  readonly additionalPayments: readonly ScenarioPayment[];
+  readonly id: string;
+  readonly name: string;
 }
 
 export interface ScenarioPayment {
-  from: Date;
-  id: string;
-  principalAmount: number;
-  to?: Date;
+  readonly from: Date;
+  readonly id: string;
+  readonly principalAmount: number;
+  readonly to?: Date;
 }
 
 export interface ScenarioPaymentCreate {
-  from: Date;
-  principalAmount: number;
-  to?: Date;
+  readonly from: Date;
+  readonly principalAmount: number;
+  readonly to?: Date;
 }

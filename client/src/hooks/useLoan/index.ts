@@ -1,53 +1,46 @@
 import { useMemo } from "react";
 import { useLoanQuery } from "./LoanQuery.generated";
 import { useUpdateLoanMutation } from "./UpdateLoanMutation.generated";
+import { useCreatePaymentMutation } from "./CreatePaymentMutation.generated";
 
-export interface AmortizationPayment {
-  amount: number;
-  balance: number;
-  date: Date;
-  interest: number;
-  interestToDate: number;
-  paymentNumber: number;
-  principal: number;
-  principalToDate: number;
+export interface CreatePaymentModel {
+  readonly date: Date;
+  readonly interest: number;
+  readonly note: string;
+  readonly principal: number;
 }
 
 export interface Loan {
-  id: string;
-  loanAmount: number;
-  name: string;
-  payments: readonly Payment[];
-  periodInterestRate: number;
-  periods: number;
-  startDate: Date;
+  readonly id: string;
+  readonly loanAmount: number;
+  readonly name: string;
+  readonly payments: readonly Payment[];
+  readonly periodInterestRate: number;
+  readonly periods: number;
+  readonly startDate: Date;
 }
 
 export interface LoanUpdateModel {
-  loanAmount?: number;
-  name?: string;
-  periodInterestRate?: number;
-  periods?: number;
-  startDate?: Date;
+  readonly loanAmount?: number;
+  readonly name?: string;
+  readonly periodInterestRate?: number;
+  readonly periods?: number;
+  readonly startDate?: Date;
 }
 
 export interface Payment {
-  date: Date;
-  id: string;
-  interest: number;
-  note: string;
-  principal: number;
-}
-
-export enum PeriodType {
-  monthly = "Monthly",
-  yearly = "Yearly",
+  readonly date: Date;
+  readonly id: string;
+  readonly interest: number;
+  readonly note: string;
+  readonly principal: number;
 }
 
 export interface UseLoanResult {
-  error?: Error;
-  isLoading: boolean;
-  loan?: Loan;
+  readonly error?: Error;
+  readonly isLoading: boolean;
+  readonly loan?: Loan;
+  createPayment(payment: CreatePaymentModel): Promise<void>;
   updateLoan(changes: LoanUpdateModel): Promise<void>;
 }
 
@@ -55,6 +48,7 @@ export default function useLoan(id: string): UseLoanResult {
   const { data, error, loading } = useLoanQuery({
     variables: { id },
   });
+  const [createPayment] = useCreatePaymentMutation();
   const [updateLoan] = useUpdateLoanMutation();
 
   const loan = useMemo<Loan | undefined>(() => {
@@ -78,6 +72,17 @@ export default function useLoan(id: string): UseLoanResult {
     error,
     isLoading: loading,
     loan,
+    createPayment: async payment => {
+      await createPayment({
+        variables: {
+          id,
+          payment: {
+            ...payment,
+            date: payment.date.toISOString(),
+          },
+        },
+      });
+    },
     updateLoan: async changes => {
       await updateLoan({
         variables: {

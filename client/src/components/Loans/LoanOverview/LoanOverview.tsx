@@ -1,5 +1,5 @@
-import { Card, makeStyles, Tabs, Tab, Typography } from "@material-ui/core";
-// import AddIcon from "@material-ui/icons/Add";
+import { Card, Fab, makeStyles, Tabs, Tab, Typography } from "@material-ui/core";
+import AddIcon from "@material-ui/icons/Add";
 import * as React from "react";
 import useDocumentTitle from "../../../hooks/useDocumentTitle";
 import useLoan from "../../../hooks/useLoan";

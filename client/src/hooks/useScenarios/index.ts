@@ -10,9 +10,9 @@ import { useUpdateScenarioMutation } from "./UpdateScenarioMutation.generated";
 export * from "./types";
 
 export interface UseScenariosResult {
-  error?: Error;
-  isLoading: boolean;
-  scenarios: readonly Scenario[];
+  readonly error?: Error;
+  readonly isLoading: boolean;
+  readonly scenarios: readonly Scenario[];
   addScenario(scenario: ScenarioCreate): Promise<{ id: string }>;
   removeScenario(scenario: ScenarioModel): void;
   updateScenario(scenario: ScenarioModel): void;

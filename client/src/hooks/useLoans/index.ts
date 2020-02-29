@@ -5,23 +5,23 @@ import { useDeleteLoanMutation } from "./DeleteLoanMutation.generated";
 import { useLoansQuery } from "./LoansQuery.generated";
 
 export interface Loan {
-  id: string;
-  name: string;
+  readonly id: string;
+  readonly name: string;
 }
 
 export interface LoanCreateModel {
-  loanAmount: number;
-  name: string;
-  periodInterestRate: number;
-  periods: number;
-  periodType: PeriodType;
-  startDate: Date;
+  readonly loanAmount: number;
+  readonly name: string;
+  readonly periodInterestRate: number;
+  readonly periods: number;
+  readonly periodType: PeriodType;
+  readonly startDate: Date;
 }
 
 export interface UseLoansResult {
-  error?: Error;
-  isLoading: boolean;
-  loans: readonly Loan[];
+  readonly error?: Error;
+  readonly isLoading: boolean;
+  readonly loans: readonly Loan[];
   createLoan(loan: LoanCreateModel): Promise<{ id: string }>;
   deleteLoan(id: string): Promise<void>;
 }
