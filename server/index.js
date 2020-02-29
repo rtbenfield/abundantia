@@ -82,6 +82,8 @@ app.use(async function(req, res, next) {
     PRISMA_SECRET,
     {
       expiresIn: 60,
+      // Exclude iat. Seems like Prisma's time is off from ours and creates timing issues
+      noTimestamp: true,
     },
   );
   const prismaManagementClient = new GraphQLClient(`${PRISMA_URL}/management`, {
