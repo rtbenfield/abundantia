@@ -1,0 +1,46 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - master
+      - feature/github_actions
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Restore dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run Parcel build
+        run: parcel build ./src/index.html --out-dir ./public --no-autoinstall
+
+      - name: Publish static content
+        uses: actions/upload-artifact@v2
+        with:
+          name: public
+          path: public
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: public
+
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@v1
+        with:
+          args: deploy
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
