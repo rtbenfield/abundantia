@@ -1,16 +1,47 @@
 {
-  "name": "loan-rover",
+  "name": "abundantia",
   "version": "1.0.0",
-  "main": "./server/index.js",
-  "license": "MIT",
+  "main": "index.js",
+  "author": {
+    "email": "rtbenfield@gmail.com",
+    "name": "Tyler Benfield",
+    "url": "https://tylerbenfield.me"
+  },
   "scripts": {
-    "build": "parcel build ./client/src/index.html --out-dir ./client/dist",
-    "start": "node ./server/index.js",
-    "postinstall": "cd ./client && yarn install && cd ../server && yarn install"
+    "build": "parcel build ./src/index.html --out-dir ./public",
+    "start": "parcel ./src/index.html"
+  },
+  "dependencies": {
+    "@date-io/core": "^1.x",
+    "@date-io/luxon": "^1.x",
+    "@material-ui/core": "^4.9.11",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.50",
+    "@material-ui/pickers": "^3.2.10",
+    "@sentry/browser": "^5.15.5",
+    "clsx": "^1.1.0",
+    "firebase": "^7.14.2",
+    "luxon": "^1.23.0",
+    "notistack": "^0.9.11",
+    "prop-types": "^15.6.0",
+    "react": "^15.6.2 || ^16.0",
+    "react-dom": "^16.13.1",
+    "react-ga": "^2.7.0",
+    "react-router": "^5.1.2",
+    "react-router-dom": "^5.1.2",
+    "recharts": "^1.8.5"
   },
   "devDependencies": {
-    "parcel": "^1.12.4",
-    "prettier": "1.19.1"
-  },
-  "dependencies": {}
+    "@types/luxon": "^1.22.0",
+    "@types/react": "^16.9.34",
+    "@types/react-dom": "^16.9.6",
+    "@types/react-router": "^5.1.5",
+    "@types/react-router-dom": "^5.1.4",
+    "@types/recharts": "^1.8.10",
+    "eslint": "^6.8.0",
+    "parcel-bundler": "^1.12.4",
+    "parcel-plugin-bundle-visualiser": "^1.2.0",
+    "prettier": "^2.0.5",
+    "typescript": "^3.8.3"
+  }
 }

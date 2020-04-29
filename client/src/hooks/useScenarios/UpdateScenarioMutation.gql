@@ -1,8 +1,0 @@
-mutation UpdateScenario($id: ID!, $scenario: ScenarioUpdateInput!) {
-  updateScenarioClean: updateScenario(where: { id: $id }, data: { additionalPayments: { deleteMany: {} } }) {
-    id
-  }
-  updateScenario(where: { id: $id }, data: $scenario) {
-    id
-  }
-}

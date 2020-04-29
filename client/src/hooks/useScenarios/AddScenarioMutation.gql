@@ -1,5 +1,0 @@
-mutation AddScenario($scenario: ScenarioCreateInput!) {
-  createScenario(data: $scenario) {
-    id
-  }
-}
