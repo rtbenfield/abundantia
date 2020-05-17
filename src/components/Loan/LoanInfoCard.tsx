@@ -14,7 +14,7 @@ import { Link, useRouteMatch } from "react-router-dom";
 import { Loan } from "../../hooks/useLoans";
 
 interface LoanInfoCardProps {
-  loan: Loan;
+  loan: Loan | null;
   onDeleteClick(): void;
   onEditClick(): void;
 }
@@ -45,25 +45,48 @@ const LoanInfoCard: React.FC<LoanInfoCardProps> = ({
             <ListItem component="div">
               <ListItemText
                 primary="Loan amount"
-                secondary={currencyFormat.format(loan.loanAmount)}
+                secondary={
+                  loan ? currencyFormat.format(loan.loanAmount) : "$xxx,xxx.xx"
+                }
+                secondaryTypographyProps={{
+                  "aria-hidden": !loan,
+                  className: loan ? "" : classes.listItemLoading,
+                }}
               />
             </ListItem>
             <ListItem component="div">
               <ListItemText
                 primary="Years"
-                secondary={numberFormat.format(loan.periods / 12)}
+                secondary={loan ? numberFormat.format(loan.periods / 12) : "xx"}
+                secondaryTypographyProps={{
+                  className: loan ? "" : classes.listItemLoading,
+                }}
               />
             </ListItem>
             <ListItem component="div">
               <ListItemText
                 primary="Annual interest rate"
-                secondary={percentFormat.format(loan.periodInterestRate * 12)}
+                secondary={
+                  loan
+                    ? percentFormat.format(loan.periodInterestRate * 12)
+                    : "x.x%"
+                }
+                secondaryTypographyProps={{
+                  "aria-hidden": !loan,
+                  className: loan ? "" : classes.listItemLoading,
+                }}
               />
             </ListItem>
             <ListItem component="div">
               <ListItemText
                 primary="Start date"
-                secondary={dateFormat.format(loan.startDate)}
+                secondary={
+                  loan ? dateFormat.format(loan.startDate) : "xxxx xxxx"
+                }
+                secondaryTypographyProps={{
+                  "aria-hidden": !loan,
+                  className: loan ? "" : classes.listItemLoading,
+                }}
               />
             </ListItem>
           </List>
@@ -146,6 +169,16 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("md")]: {
       gridTemplateColumns: "1fr 1fr",
     },
+  },
+  listItemLoading: {
+    display: "inline-block",
+    backgroundColor: theme.palette.text.secondary,
+    borderRadius: theme.shape.borderRadius,
+    color: "transparent",
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+    opacity: 0.5,
+    userSelect: "none",
   },
 }));
 

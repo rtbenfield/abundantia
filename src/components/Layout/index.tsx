@@ -18,6 +18,22 @@ const LoanAddDialog = React.lazy(() => import("../LoanAddDialog"));
 const Login = React.lazy(() => import("../Login"));
 const LoanExplore = React.lazy(() => import("../LoanExplore"));
 
+const PageLoading: React.FC = () => {
+  return (
+    <div
+      style={{
+        alignContent: "center",
+        display: "flex",
+        flex: 1,
+        height: "100%",
+        justifyContent: "center",
+      }}
+    >
+      <CircularProgress size="5rem" style={{ alignSelf: "center" }} />
+    </div>
+  );
+};
+
 const Layout: React.FC = () => {
   const history = useHistory();
   const user = useUser();
@@ -25,22 +41,10 @@ const Layout: React.FC = () => {
   const [addOpen, setAddOpen] = React.useState(false);
 
   if (user === undefined) {
-    return (
-      <div
-        style={{
-          alignContent: "center",
-          display: "flex",
-          flex: 1,
-          height: "100%",
-          justifyContent: "center",
-        }}
-      >
-        <CircularProgress size="5rem" style={{ alignSelf: "center" }} />
-      </div>
-    );
+    return <PageLoading />;
   } else if (user === null) {
     return (
-      <React.Suspense fallback={<CircularProgress />}>
+      <React.Suspense fallback={<PageLoading />}>
         <Login />
       </React.Suspense>
     );
@@ -53,14 +57,14 @@ const Layout: React.FC = () => {
           onAddClick={() => setAddOpen(true)}
         />
         <main className={classes.content}>
-          <React.Suspense fallback={<CircularProgress />}>
+          <React.Suspense fallback={<PageLoading />}>
             <Switch>
               <Route component={Home} exact path="/" />
               <Route component={Loan} path="/loans/:id" />
               <Redirect to="/" />
             </Switch>
             <Route path="/loans/:id/explore">
-              {({ history, match }) => (
+              {({ match }) => (
                 <Dialog
                   fullScreen
                   onClose={() => history.push(`/loans/${match?.params.id}`)}
@@ -88,7 +92,7 @@ const Layout: React.FC = () => {
             </Route>
           </React.Suspense>
         </main>
-        <React.Suspense fallback={<CircularProgress />}>
+        <React.Suspense fallback={null}>
           <LoanAddDialog
             onClose={() => setAddOpen(false)}
             onLoanAdded={(id) => {

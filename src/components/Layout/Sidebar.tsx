@@ -24,7 +24,37 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onAddClick }) => {
   } else {
     return (
       <Paper className={clsx(classes.root, className)} elevation={16} square>
-        {!isLoading && (
+        {isLoading ? (
+          <List>
+            <ListItem>
+              <ListItemText
+                primary="xxxxxxx"
+                primaryTypographyProps={{
+                  "aria-hidden": true,
+                  className: classes.listItemLoading,
+                }}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary="xxxx"
+                primaryTypographyProps={{
+                  "aria-hidden": true,
+                  className: classes.listItemLoading,
+                }}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary="xxxxxxxxx"
+                primaryTypographyProps={{
+                  "aria-hidden": true,
+                  className: classes.listItemLoading,
+                }}
+              />
+            </ListItem>
+          </List>
+        ) : (
           <List>
             {[...loans]
               .sort((a, b) => a.name.localeCompare(b.name))
@@ -48,6 +78,16 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onAddClick }) => {
 };
 
 const useStyles = makeStyles((theme) => ({
+  listItemLoading: {
+    display: "inline-block",
+    backgroundColor: theme.palette.text.primary,
+    borderRadius: theme.shape.borderRadius,
+    color: "transparent",
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+    opacity: 0.5,
+    userSelect: "none",
+  },
   root: {
     zIndex: theme.zIndex.drawer,
   },
