@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build
+    name: Build and Deploy
     runs-on: ubuntu-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -23,7 +23,8 @@ jobs:
       - name: Publish static content
         uses: actions/upload-artifact@v2
         with:
-          name: public
+          name: site
+          path: public
 
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@v1.3.0
