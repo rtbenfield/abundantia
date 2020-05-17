@@ -26,9 +26,7 @@ const Loan: React.FC = () => {
 
   if (error) {
     throw error;
-  } else if (isLoading) {
-    return <CircularProgress size="5rem" />;
-  } else if (!loan) {
+  } else if (!isLoading && !loan) {
     return <Typography>Loan not found</Typography>;
   } else {
     return (
@@ -38,22 +36,33 @@ const Loan: React.FC = () => {
           onDeleteClick={() => setDeleteOpen(true)}
           onEditClick={() => setEdit(true)}
         />
-        <Card>
-          <Tabs onChange={(_, v) => setTab(v)} value={tab}>
-            <Tab label="Amortization Schedule" value={LoanTabs.amortization} />
-          </Tabs>
-          {tab === LoanTabs.amortization && <AmortizationTable loan={loan} />}
-        </Card>
-        <LoanDeleteDialog
-          loan={loan}
-          onClose={() => setDeleteOpen(false)}
-          open={deleteOpen}
-        />
-        <LoanEditDialog
-          loan={loan}
-          onClose={() => setEdit(false)}
-          open={edit}
-        />
+        {loan ? (
+          <Card>
+            <Tabs onChange={(_, v) => setTab(v)} value={tab}>
+              <Tab
+                label="Amortization Schedule"
+                value={LoanTabs.amortization}
+              />
+            </Tabs>
+            {tab === LoanTabs.amortization && <AmortizationTable loan={loan} />}
+          </Card>
+        ) : (
+          <CircularProgress size="5rem" style={{ justifySelf: "center" }} />
+        )}
+        {loan && (
+          <LoanDeleteDialog
+            loan={loan}
+            onClose={() => setDeleteOpen(false)}
+            open={deleteOpen}
+          />
+        )}
+        {loan && (
+          <LoanEditDialog
+            loan={loan}
+            onClose={() => setEdit(false)}
+            open={edit}
+          />
+        )}
       </div>
     );
   }
