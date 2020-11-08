@@ -5,8 +5,8 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
 import Alert from "@material-ui/lab/Alert";
-import { auth } from "firebase/app";
 import * as React from "react";
+import { useAuth } from "../../contexts/authentication";
 
 interface EmailPasswordProps {
   onCancel(): void;
@@ -14,33 +14,22 @@ interface EmailPasswordProps {
 }
 
 const EmailPassword: React.FC<EmailPasswordProps> = ({ onCancel, open }) => {
+  const auth = useAuth();
   const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
   const [pending, setPending] = React.useState(false);
   const [error, setError] = React.useState<firebase.FirebaseError | null>(null);
   const [sent, setSent] = React.useState(false);
-  const [code, setCode] = React.useState("");
 
-  async function handleSubmit() {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setPending(true);
-    if (!sent) {
-      try {
-        // TODO: Somehow this is kicking back to the login page, but the user gets the email
-        await auth().sendPasswordResetEmail(email);
-        setSent(true);
-      } catch (e) {
-        setError(e);
-      } finally {
-        setPending(false);
-      }
-    } else {
-      try {
-        await auth().confirmPasswordReset(code, password);
-        await auth().signInWithEmailAndPassword(email, password);
-      } catch (e) {
-        setError(e);
-        setPending(false);
-      }
+    try {
+      await auth.requestPasswordRecovery(email);
+      setSent(true);
+    } catch (e) {
+      setError(e);
+    } finally {
+      setPending(false);
     }
   }
 
@@ -49,62 +38,45 @@ const EmailPassword: React.FC<EmailPasswordProps> = ({ onCancel, open }) => {
       <form onSubmit={handleSubmit}>
         <DialogTitle>Reset Password</DialogTitle>
         {!sent && (
-          <DialogContent>
-            {error && <Alert severity="error">{error.message}</Alert>}
-            <TextField
-              fullWidth
-              label="Email"
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              type="email"
-              value={email}
-            />
-          </DialogContent>
+          <>
+            <DialogContent>
+              {error && <Alert severity="error">{error.message}</Alert>}
+              <TextField
+                fullWidth
+                label="Email"
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                type="email"
+                value={email}
+              />
+              <DialogActions>
+                <Button
+                  color="primary"
+                  disabled={pending}
+                  onClick={onCancel}
+                  variant="text"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  color="primary"
+                  disabled={pending}
+                  type="submit"
+                  variant="contained"
+                >
+                  {!sent ? "Send" : "Submit"}
+                </Button>
+              </DialogActions>
+            </DialogContent>
+          </>
         )}
         {sent && (
           <DialogContent>
             <Alert severity="success">
               Password reset email sent to {email}
             </Alert>
-            <TextField
-              autoCapitalize="off"
-              autoComplete="off"
-              autoCorrect="off"
-              fullWidth
-              label="Code"
-              onChange={(e) => setCode(e.target.value)}
-              required
-              type="text"
-              value={code}
-            />
-            <TextField
-              fullWidth
-              label="New Password"
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              type="text"
-              value={password}
-            />
           </DialogContent>
         )}
-        <DialogActions>
-          <Button
-            color="primary"
-            disabled={pending}
-            onClick={onCancel}
-            variant="text"
-          >
-            Cancel
-          </Button>
-          <Button
-            color="primary"
-            disabled={pending}
-            type="submit"
-            variant="contained"
-          >
-            {!sent ? "Send" : "Submit"}
-          </Button>
-        </DialogActions>
       </form>
     </Dialog>
   );

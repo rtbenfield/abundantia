@@ -1,6 +1,6 @@
 import { firestore } from "firebase/app";
 import { useEffect, useReducer } from "react";
-import { useUser } from "./useUser";
+import { useAuth } from "../contexts/authentication";
 
 export interface Scenario {
   readonly additionalPayments: readonly ScenarioPayment[];
@@ -127,10 +127,10 @@ const converter: firestore.FirestoreDataConverter<Scenario> = {
 };
 
 export function useScenarioActions(loanId: string): UseScenarioActionsResult {
-  const user = useUser();
+  const { user } = useAuth();
 
   const scenarioStore = firestore()
-    .collection(`users/${user?.uid}/loans/${loanId}/scenarios`)
+    .collection(`users/${user?.id}/loans/${loanId}/scenarios`)
     .withConverter(createConverter);
 
   async function createScenario(
@@ -165,13 +165,13 @@ export interface UseScenariosResult {
 }
 
 export function useScenarios(loanId: string): UseScenariosResult {
-  const user = useUser();
+  const { user } = useAuth();
   const [state, dispatch] = useReducer(reducer, defaultValue);
   useEffect(() => {
     if (user) {
       dispatch({ type: "fetch" });
       const unsubscribe = firestore()
-        .collection(`users/${user.uid}/loans/${loanId}/scenarios`)
+        .collection(`users/${user.id}/loans/${loanId}/scenarios`)
         .withConverter(converter)
         .onSnapshot(
           (response) => {

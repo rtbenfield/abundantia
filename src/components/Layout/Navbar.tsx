@@ -4,20 +4,19 @@ import { makeStyles } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import { auth } from "firebase/app";
 import * as React from "react";
-import { useUser } from "../../hooks/useUser";
+import { useAuth } from "../../contexts/authentication";
 
 interface NavbarProps {
   className?: string;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ className }) => {
+  const auth = useAuth();
   const classes = useStyles();
-  const user = useUser();
 
   async function handleSignOut() {
-    await auth().signOut();
+    await auth.signOut();
   }
 
   return (
@@ -31,7 +30,7 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
         >
           Abundantia
         </Typography>
-        {user && (
+        {auth.user && (
           <IconButton color="inherit" onClick={handleSignOut} title="Sign out">
             <ExitToAppIcon />
           </IconButton>

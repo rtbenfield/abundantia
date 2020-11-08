@@ -5,8 +5,8 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
 import Alert from "@material-ui/lab/Alert";
-import { auth } from "firebase/app";
 import * as React from "react";
+import { useAuth } from "../../contexts/authentication";
 
 interface EmailPasswordProps {
   open: boolean;
@@ -19,16 +19,18 @@ const EmailPassword: React.FC<EmailPasswordProps> = ({
   onRegister,
   open,
 }) => {
+  const auth = useAuth();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [pending, setPending] = React.useState(false);
-  const [error, setError] = React.useState<firebase.FirebaseError | null>(null);
+  const [error, setError] = React.useState<Error | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setPending(true);
     try {
-      await auth().signInWithEmailAndPassword(email, password);
+      const user = await auth.login(email, password);
+      console.log(user.jwt());
     } catch (e) {
       setError(e);
       setPending(false);

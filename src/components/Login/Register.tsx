@@ -5,8 +5,8 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
 import Alert from "@material-ui/lab/Alert";
-import * as firebase from "firebase/app";
 import * as React from "react";
+import { useAuth } from "../../contexts/authentication";
 
 interface RegisterProps {
   open: boolean;
@@ -14,6 +14,7 @@ interface RegisterProps {
 }
 
 const Register: React.FC<RegisterProps> = ({ onCancel, open }) => {
+  const auth = useAuth();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [pending, setPending] = React.useState(false);
@@ -23,7 +24,7 @@ const Register: React.FC<RegisterProps> = ({ onCancel, open }) => {
     e.preventDefault();
     setPending(true);
     try {
-      await firebase.auth().createUserWithEmailAndPassword(email, password);
+      await auth.signup(email, password);
       onCancel();
     } catch (e) {
       setError(e);

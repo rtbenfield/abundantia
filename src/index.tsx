@@ -1,3 +1,4 @@
+import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import LuxonUtils from "@date-io/luxon";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import "firebase/analytics";
@@ -11,6 +12,7 @@ import { BrowserRouter } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Layout from "./components/Layout";
 import ThemeProvider from "./components/ThemeProvider";
+import { AuthProvider } from "./contexts/authentication";
 
 firebase.initializeApp({
   apiKey: "AIzaSyB9Ed9FL223yYKfwTLpT43n1MJ_TcnyzbU",
@@ -24,16 +26,37 @@ firebase.initializeApp({
 });
 firebase.performance();
 
+const apolloClient = new ApolloClient({
+  cache: new InMemoryCache({
+    typePolicies: {
+      Loan: {
+        fields: {
+          startDate: {
+            read(existing) {
+              return new Date(existing);
+            },
+          },
+        },
+      },
+    },
+  }),
+  uri: "http://localhost:8072/graphql",
+});
+
 const App: React.FC = () => {
   return (
     <BrowserRouter>
-      <ThemeProvider>
-        <MuiPickersUtilsProvider utils={LuxonUtils}>
-          <ErrorBoundary>
-            <Layout />
-          </ErrorBoundary>
-        </MuiPickersUtilsProvider>
-      </ThemeProvider>
+      <ApolloProvider client={apolloClient}>
+        <AuthProvider>
+          <ThemeProvider>
+            <MuiPickersUtilsProvider utils={LuxonUtils}>
+              <ErrorBoundary>
+                <Layout />
+              </ErrorBoundary>
+            </MuiPickersUtilsProvider>
+          </ThemeProvider>
+        </AuthProvider>
+      </ApolloProvider>
     </BrowserRouter>
   );
 };

@@ -1,0 +1,41 @@
+type Loan
+@auth(
+  query: {
+    rule: """
+    query ($sub: String!) {
+      queryLoan(filter: { owner: { eq: $sub } } ) {
+        id
+      }
+    }
+    """
+  }
+) {
+  id: ID!
+  loanAmount: Float!
+  name: String!
+  owner: String! @search(by: [hash])
+  periodInterestRate: Float!
+  periods: Int!
+  periodType: PeriodType!
+  scenarios: [Scenario!]!
+  startDate: DateTime!
+}
+
+enum PeriodType {
+  Monthly
+}
+
+type Scenario {
+  additionalPayments: [ScenarioPayment!]!
+  id: ID!
+  name: String!
+}
+
+type ScenarioPayment {
+  from: DateTime!
+  id: ID!
+  principalAmount: Float!
+  to: DateTime
+}
+
+# Dgraph.Authorization {"Algo": "RS256","Header": "X-Token","Namespace": "http://localhost:8079/auth/realms/abundantia","VerificationKey":"-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArHTLQcfEa3YI3zDxOxVK\nIA12OHvtxu2nyIYnyizeWKlCyn6a/950tFvWwQK05b/7IwhUWpV3+U1CRxf3MQlg\n2BeE20ca795r8A11pXlAoWnGNDdXFqHRBEM0NBx+eZEaSKWp3SMsMUjhU8sK/9xn\nAZphuqaArQaRgEmcMFz8JwIGrczRXzH6yZ1CJuLsH7dPP6vb6rOjfkOaToMhkEKf\nHL4FakHKgcvHxSOc3h21p6nB3L85zGpNwDyaVbIC2NPm3C66UAyIjfBPUsSF3N5r\nZqPwrw/quUt9+WrROz2KFvqRDNLuNvgsHM9FdMXuq94yICAUSil6JzBc0DPe7y3s\nFQIDAQAB\n-----END PUBLIC KEY-----"}

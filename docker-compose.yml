@@ -1,0 +1,40 @@
+version: "3.8"
+services:
+  # auth:
+  #   build: https://github.com/netlify/gotrue.git
+  #   depends_on:
+  #     - authdb
+  #   environment:
+  #     GOTRUE_API_HOST: localhost
+  #     GOTRUE_DB_DATABASE_URL: gotrue:super-secret@tcp(authdb:3306)/gotrue_development?parseTime=true&multiStatements=true
+  #     GOTRUE_DB_DRIVER: mysql
+  #     GOTRUE_JWT_SECRET: supersecretvalue
+  #     GOTRUE_JWT_EXP: 3600
+  #     GOTRUE_JWT_AUD: abundantia
+  #     GOTRUE_OPERATOR_TOKEN: dawaht
+  #     GOTRUE_SITE_URL: https://abundantia.tylerbenfield.dev
+  #     LOG_LEVEL: debug
+  #   ports:
+  #     - 8081:8081
+  # authdb:
+  #   image: mysql:latest
+  #   environment:
+  #     # Changing these values won't take effect unless the volume is rebuilt
+  #     # They must be changed manually for existing instances
+  #     MYSQL_DATABASE: gotrue_development
+  #     MYSQL_PASSWORD: super-secret
+  #     MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+  #     MYSQL_USER: gotrue
+  auth:
+    image: quay.io/keycloak/keycloak:latest
+    environment:
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+    ports:
+      - 8079:8080
+  db:
+    image: dgraph/standalone:latest
+    ports:
+      - 8071:8000
+      - 8072:8080
+      - 8073:9080

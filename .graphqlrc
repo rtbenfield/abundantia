@@ -1,0 +1,11 @@
+projects:
+  app:
+    schema: http://localhost:8072/graphql
+    endpoints:
+      default:
+        url: http://localhost:8072/graphql
+  admin:
+    schema: http://localhost:8072/admin
+    endpoints:
+      default:
+        url: http://localhost:8072/admin

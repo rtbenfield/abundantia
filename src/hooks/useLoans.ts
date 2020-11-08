@@ -1,6 +1,12 @@
-import { firestore } from "firebase/app";
-import { useEffect, useReducer } from "react";
-import { useUser } from "./useUser";
+import { useMutation, useQuery } from "@apollo/client";
+import gql from "graphql-tag";
+
+export interface AdditionalPayment {
+  readonly from: Date;
+  readonly id: string;
+  readonly principalAmount: number;
+  readonly to: Date;
+}
 
 export interface Loan {
   readonly id: string;
@@ -9,7 +15,13 @@ export interface Loan {
   readonly periodInterestRate: number;
   readonly periods: number;
   readonly periodType: PeriodType;
+  readonly scenarios: readonly Scenario[];
   readonly startDate: Date;
+}
+export interface Scenario {
+  readonly additionalPayments: readonly AdditionalPayment[];
+  readonly id: string;
+  readonly name: string;
 }
 
 // export interface Payment {
@@ -23,65 +35,48 @@ export enum PeriodType {
   Monthly = "Monthly",
 }
 
-export type Actions =
-  | { type: "fetch" }
-  | { loans: readonly Loan[]; type: "success" }
-  | { error: Error; type: "error" }
-  | { type: "reset" };
-
-const defaultValue: UseLoansResult = {
-  error: null,
-  isLoading: true,
-  loans: [],
-};
-
-function reducer(state: UseLoansResult, action: Actions): UseLoansResult {
-  switch (action.type) {
-    case "error":
-      return { error: action.error, isLoading: false, loans: [] };
-    case "fetch":
-      return { error: null, isLoading: true, loans: state.loans };
-    case "reset":
-      return defaultValue;
-    case "success":
-      return { error: null, isLoading: false, loans: action.loans };
-  }
-}
-
-const converter: firestore.FirestoreDataConverter<Loan> = {
-  fromFirestore(snapshot, options) {
-    const data = snapshot.data(options)!;
-    return {
-      id: snapshot.id,
-      loanAmount: data.loanAmount,
-      name: data.name,
-      periodInterestRate: data.periodInterestRate,
-      periods: data.periods,
-      periodType: data.periodType,
-      startDate: data.startDate.toDate(),
-    };
-  },
-  toFirestore(modelObject) {
-    return {
-      ...modelObject,
-      startDate: firestore.Timestamp.fromDate(modelObject.startDate),
-    };
-  },
-};
-
 export interface UseLoanResult {
   error: Error | null;
   isLoading: boolean;
   loan: Loan | null;
 }
 
+const LOAN_QUERY = gql`
+  query useLoan($id: ID!) {
+    getLoan(id: $id) {
+      id
+      loanAmount
+      id
+      periodInterestRate
+      periods
+      periodType
+      scenarios {
+        additionalPayments {
+          from
+          id
+          principalAmount
+          to
+        }
+        id
+        name
+      }
+      startDate
+    }
+  }
+`;
+
 export function useLoan(id: string): UseLoanResult {
-  const { error, isLoading, loans } = useLoans();
+  const { data, error = null, loading } = useQuery<
+    { getLoan: Loan },
+    { id: string }
+  >(LOAN_QUERY, {
+    variables: { id },
+  });
 
   return {
     error,
-    isLoading,
-    loan: loans.find((x) => x.id === id) ?? null,
+    isLoading: loading,
+    loan: data?.getLoan ?? null,
   };
 }
 
@@ -109,83 +104,101 @@ export interface UseLoanActionsResult {
   updateLoan(id: string, changes: LoanUpdateModel): Promise<void>;
 }
 
-const createConverter: firestore.FirestoreDataConverter<LoanCreateModel> = {
-  fromFirestore(snapshot, options) {
-    const data = snapshot.data(options)!;
-    return {
-      loanAmount: data.loanAmount,
-      name: data.name,
-      periodInterestRate: data.periodInterestRate,
-      periodType: data.periodType,
-      periods: data.periods,
-      startDate: data.startDate.toDate(),
-    };
-  },
-  toFirestore(modelObject) {
-    return {
-      ...modelObject,
-      startDate: firestore.Timestamp.fromDate(modelObject.startDate),
-    };
-  },
-};
+const LOANS_QUERY = gql`
+  query useLoans {
+    queryLoan {
+      id
+      loanAmount
+      name
+      periodInterestRate
+      periods
+      periodType
+      startDate
+    }
+  }
+`;
+
+const CREATE_LOAN = gql`
+  mutation createLoan($loan: AddLoanInput!) {
+    addLoan(input: [$loan]) {
+      loan {
+        id
+      }
+    }
+  }
+`;
+
+const DELETE_LOAN = gql`
+  mutation deleteLoan($id: ID!) {
+    deleteLoan(filter: { id: [$id] }) {
+      numUids
+    }
+  }
+`;
+
+const UPDATE_LOAN = gql`
+  mutation updateLoan($id: ID!, $changes: LoanPatch!) {
+    updateLoan(input: { filter: { id: [$id] }, set: $changes }) {
+      numUids
+    }
+  }
+`;
 
 export function useLoanActions(): UseLoanActionsResult {
-  const user = useUser();
-
-  const loanStore = firestore()
-    .collection(`users/${user?.uid}/loans`)
-    .withConverter(createConverter);
-
-  async function createLoan(loan: LoanCreateModel): Promise<string> {
-    const d = await loanStore.add(loan);
-    return d.id;
-  }
-
-  function deleteLoan(id: string): Promise<void> {
-    return loanStore.doc(id).delete();
-  }
-
-  function updateLoan(id: string, changes: LoanUpdateModel): Promise<void> {
-    return loanStore.doc(id).update(changes);
-  }
+  const [createLoan] = useMutation<
+    { addLoan: { loan: Array<{ id: string }> } },
+    { loan: LoanCreateModel & { scenarios: [] } }
+  >(CREATE_LOAN, {
+    awaitRefetchQueries: true,
+    refetchQueries: [{ query: LOANS_QUERY }],
+  });
+  const [deleteLoan] = useMutation<unknown, { id: string }>(DELETE_LOAN, {
+    awaitRefetchQueries: true,
+    refetchQueries: [{ query: LOANS_QUERY }],
+  });
+  const [updateLoan] = useMutation<
+    unknown,
+    { changes: LoanUpdateModel; id: string }
+  >(UPDATE_LOAN, {
+    awaitRefetchQueries: true,
+    refetchQueries: [{ query: LOANS_QUERY }],
+  });
 
   return {
-    createLoan,
-    deleteLoan,
-    updateLoan,
+    async createLoan(loan) {
+      const { data } = await createLoan({
+        variables: {
+          loan: { ...loan, scenarios: [] },
+        },
+      });
+      return data!.addLoan.loan[0].id;
+    },
+    async deleteLoan(id) {
+      await deleteLoan({
+        variables: { id },
+      });
+    },
+    async updateLoan(id, changes) {
+      updateLoan({
+        variables: { changes, id },
+      });
+    },
   };
 }
 
 export interface UseLoansResult {
   error: Error | null;
   isLoading: boolean;
-  loans: readonly Loan[];
+  loans: readonly Omit<Loan, "scenarios">[];
 }
 
 export function useLoans(): UseLoansResult {
-  const user = useUser();
-  const [state, dispatch] = useReducer(reducer, defaultValue);
-  useEffect(() => {
-    if (user) {
-      dispatch({ type: "fetch" });
-      const loanStore = firestore()
-        .collection(`users/${user.uid}/loans`)
-        .withConverter(converter);
-      const unsubscribe = loanStore.onSnapshot(
-        (response) => {
-          const data = response.docs.map<Loan>((x) => x.data());
-          console.info("useLoans data", data);
-          dispatch({ loans: data, type: "success" });
-        },
-        (err) => {
-          dispatch({ error: err, type: "error" });
-        },
-      );
-      return unsubscribe;
-    } else {
-      dispatch({ type: "reset" });
-      return undefined;
-    }
-  }, [user]);
-  return state;
+  const { data, error = null, loading } = useQuery<{
+    queryLoan: Omit<Loan, "scenarios">[];
+  }>(LOANS_QUERY);
+  return {
+    error,
+    isLoading: loading,
+    loans: data?.queryLoan ?? [],
+  };
 }
