@@ -1,4 +1,4 @@
-import { firestore } from "firebase/app";
+import firebase from "firebase/app";
 import { useEffect, useReducer } from "react";
 import { useUser } from "./useUser";
 
@@ -48,7 +48,7 @@ function reducer(state: UseLoansResult, action: Actions): UseLoansResult {
   }
 }
 
-const converter: firestore.FirestoreDataConverter<Loan> = {
+const converter: firebase.firestore.FirestoreDataConverter<Loan> = {
   fromFirestore(snapshot, options) {
     const data = snapshot.data(options)!;
     return {
@@ -61,10 +61,10 @@ const converter: firestore.FirestoreDataConverter<Loan> = {
       startDate: data.startDate.toDate(),
     };
   },
-  toFirestore(modelObject) {
+  toFirestore(modelObject: Loan) {
     return {
       ...modelObject,
-      startDate: firestore.Timestamp.fromDate(modelObject.startDate),
+      startDate: firebase.firestore.Timestamp.fromDate(modelObject.startDate),
     };
   },
 };
@@ -109,7 +109,7 @@ export interface UseLoanActionsResult {
   updateLoan(id: string, changes: LoanUpdateModel): Promise<void>;
 }
 
-const createConverter: firestore.FirestoreDataConverter<LoanCreateModel> = {
+const createConverter: firebase.firestore.FirestoreDataConverter<LoanCreateModel> = {
   fromFirestore(snapshot, options) {
     const data = snapshot.data(options)!;
     return {
@@ -121,10 +121,10 @@ const createConverter: firestore.FirestoreDataConverter<LoanCreateModel> = {
       startDate: data.startDate.toDate(),
     };
   },
-  toFirestore(modelObject) {
+  toFirestore(modelObject: LoanCreateModel) {
     return {
       ...modelObject,
-      startDate: firestore.Timestamp.fromDate(modelObject.startDate),
+      startDate: firebase.firestore.Timestamp.fromDate(modelObject.startDate),
     };
   },
 };
@@ -132,7 +132,8 @@ const createConverter: firestore.FirestoreDataConverter<LoanCreateModel> = {
 export function useLoanActions(): UseLoanActionsResult {
   const user = useUser();
 
-  const loanStore = firestore()
+  const loanStore = firebase
+    .firestore()
     .collection(`users/${user?.uid}/loans`)
     .withConverter(createConverter);
 
@@ -168,7 +169,8 @@ export function useLoans(): UseLoansResult {
   useEffect(() => {
     if (user) {
       dispatch({ type: "fetch" });
-      const loanStore = firestore()
+      const loanStore = firebase
+        .firestore()
         .collection(`users/${user.uid}/loans`)
         .withConverter(converter);
       const unsubscribe = loanStore.onSnapshot(

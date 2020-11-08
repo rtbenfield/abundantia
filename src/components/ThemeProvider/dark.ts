@@ -34,6 +34,11 @@ export default createMuiTheme({
     type: "dark",
   },
   overrides: {
+    MuiDialog: {
+      paper: {
+        backgroundColor: "#2E3440",
+      },
+    },
     MuiTableCell: {
       root: {
         borderBottomColor: "#4C566A",

@@ -4,7 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import { auth } from "firebase/app";
+import firebase from "firebase/app";
 import * as React from "react";
 import { useUser } from "../../hooks/useUser";
 
@@ -17,7 +17,7 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
   const user = useUser();
 
   async function handleSignOut() {
-    await auth().signOut();
+    await firebase.auth().signOut();
   }
 
   return (

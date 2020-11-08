@@ -1,7 +1,7 @@
 import LuxonUtils from "@date-io/luxon";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import "firebase/analytics";
-import * as firebase from "firebase/app";
+import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 import "firebase/performance";

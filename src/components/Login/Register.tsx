@@ -5,7 +5,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
 import Alert from "@material-ui/lab/Alert";
-import * as firebase from "firebase/app";
+import firebase from "firebase/app";
 import * as React from "react";
 
 interface RegisterProps {

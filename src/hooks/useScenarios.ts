@@ -1,4 +1,4 @@
-import { firestore } from "firebase/app";
+import firebase from "firebase/app";
 import { useEffect, useReducer } from "react";
 import { useUser } from "./useUser";
 
@@ -63,7 +63,7 @@ export interface UseScenarioActionsResult {
   ): Promise<void>;
 }
 
-const createConverter: firestore.FirestoreDataConverter<ScenarioCreateModel> = {
+const createConverter: firebase.firestore.FirestoreDataConverter<ScenarioCreateModel> = {
   fromFirestore(snapshot, options) {
     const data = snapshot.data(options)!;
     return {
@@ -80,13 +80,13 @@ const createConverter: firestore.FirestoreDataConverter<ScenarioCreateModel> = {
       name: data.name,
     };
   },
-  toFirestore(modelObject) {
+  toFirestore(modelObject: ScenarioCreateModel) {
     return {
       additionalPayments: modelObject.additionalPayments.map((x) => {
         return {
-          from: firestore.Timestamp.fromDate(x.from),
+          from: firebase.firestore.Timestamp.fromDate(x.from),
           principalAmount: x.principalAmount,
-          to: x.to ? firestore.Timestamp.fromDate(x.to) : null,
+          to: x.to ? firebase.firestore.Timestamp.fromDate(x.to) : null,
         };
       }),
       name: modelObject.name,
@@ -94,7 +94,7 @@ const createConverter: firestore.FirestoreDataConverter<ScenarioCreateModel> = {
   },
 };
 
-const converter: firestore.FirestoreDataConverter<Scenario> = {
+const converter: firebase.firestore.FirestoreDataConverter<Scenario> = {
   fromFirestore(snapshot, options) {
     const data = snapshot.data(options)!;
     return {
@@ -112,13 +112,13 @@ const converter: firestore.FirestoreDataConverter<Scenario> = {
       name: data.name,
     };
   },
-  toFirestore(modelObject) {
+  toFirestore(modelObject: Scenario) {
     return {
       additionalPayments: modelObject.additionalPayments.map((x) => {
         return {
-          from: firestore.Timestamp.fromDate(x.from),
+          from: firebase.firestore.Timestamp.fromDate(x.from),
           principalAmount: x.principalAmount,
-          to: x.to ? firestore.Timestamp.fromDate(x.to) : null,
+          to: x.to ? firebase.firestore.Timestamp.fromDate(x.to) : null,
         };
       }),
       name: modelObject.name,
@@ -129,7 +129,8 @@ const converter: firestore.FirestoreDataConverter<Scenario> = {
 export function useScenarioActions(loanId: string): UseScenarioActionsResult {
   const user = useUser();
 
-  const scenarioStore = firestore()
+  const scenarioStore = firebase
+    .firestore()
     .collection(`users/${user?.uid}/loans/${loanId}/scenarios`)
     .withConverter(createConverter);
 
@@ -170,7 +171,8 @@ export function useScenarios(loanId: string): UseScenariosResult {
   useEffect(() => {
     if (user) {
       dispatch({ type: "fetch" });
-      const unsubscribe = firestore()
+      const unsubscribe = firebase
+        .firestore()
         .collection(`users/${user.uid}/loans/${loanId}/scenarios`)
         .withConverter(converter)
         .onSnapshot(
