@@ -1,16 +1,33 @@
 import LuxonUtils from "@date-io/luxon";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import * as Sentry from "@sentry/react";
+import { Integrations } from "@sentry/tracing";
 import "firebase/analytics";
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 import "firebase/performance";
+import { createBrowserHistory } from "history";
 import * as React from "react";
 import { render } from "react-dom";
-import { BrowserRouter } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Layout from "./components/Layout";
+import { Router } from "./components/Router";
 import ThemeProvider from "./components/ThemeProvider";
+
+const history = createBrowserHistory();
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  environment: process.env.SENTRY_ENVIRONMENT,
+  integrations: [
+    new Integrations.BrowserTracing({
+      routingInstrumentation: Sentry.reactRouterV5Instrumentation(history),
+    }),
+  ],
+  release: process.env.GITHUB_SHA,
+  tracesSampleRate: 1,
+});
 
 firebase.initializeApp({
   apiKey: "AIzaSyB9Ed9FL223yYKfwTLpT43n1MJ_TcnyzbU",
@@ -26,7 +43,7 @@ firebase.performance();
 
 const App: React.FC = () => {
   return (
-    <BrowserRouter>
+    <Router history={history}>
       <ThemeProvider>
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <ErrorBoundary>
@@ -34,8 +51,10 @@ const App: React.FC = () => {
           </ErrorBoundary>
         </MuiPickersUtilsProvider>
       </ThemeProvider>
-    </BrowserRouter>
+    </Router>
   );
 };
 
-render(<App />, document.getElementById("root"));
+const SentryApp = Sentry.withProfiler(App);
+
+render(<SentryApp />, document.getElementById("root"));

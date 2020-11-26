@@ -21,6 +21,9 @@ jobs:
 
       - name: Run Parcel build
         run: parcel build ./src/index.html --out-dir ./public --no-autoinstall
+        env:
+          SENTRY_DSN: https://f911c31ea80e475bb301cab5e2e59693@o291540.ingest.sentry.io/1533229
+          SENTRY_ENVIRONMENT: production
 
       - name: Publish static content
         uses: actions/upload-artifact@v2

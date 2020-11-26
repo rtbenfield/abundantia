@@ -7,8 +7,8 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
 import * as React from "react";
-import { Link, Redirect, Route, Switch, useHistory } from "react-router-dom";
 import { useUser } from "../../hooks/useUser";
+import { Link, Redirect, Route, Switch, useHistory } from "../router";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 
