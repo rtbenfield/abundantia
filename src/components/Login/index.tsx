@@ -25,4 +25,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default withProfiler(Login);
+export default withProfiler(Login, { name: "Login" });

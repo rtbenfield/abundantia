@@ -77,4 +77,4 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default withProfiler(Loan);
+export default withProfiler(Loan, { name: "Loan" });

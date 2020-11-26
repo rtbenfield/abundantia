@@ -5,4 +5,4 @@ const Home: React.FC = () => {
   return null;
 };
 
-export default withProfiler(Home);
+export default withProfiler(Home, { name: "Home" });

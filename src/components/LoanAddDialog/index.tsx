@@ -55,4 +55,4 @@ const AddLoanDialog: React.FC<AddLoanDialogProps> = ({
   );
 };
 
-export default withProfiler(AddLoanDialog);
+export default withProfiler(AddLoanDialog, { name: "AddLoanDialog" });

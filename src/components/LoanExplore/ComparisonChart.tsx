@@ -103,7 +103,7 @@ const ComparisonChart: React.FC<ComparisonChartProps> = ({
   );
 };
 
-export default withProfiler(ComparisonChart);
+export default withProfiler(ComparisonChart, { name: "ComparisonChart" });
 
 const colors: readonly string[] = [
   "#B48EAD",

@@ -124,7 +124,7 @@ const Explore: React.FC = () => {
   }
 };
 
-export default withProfiler(Explore);
+export default withProfiler(Explore, { name: "Explore" });
 
 const useStyles = makeStyles((theme) => ({
   comparison: {
