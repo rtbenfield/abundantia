@@ -8,7 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
 import * as React from "react";
 import { useUser } from "../../hooks/useUser";
-import { Link, Redirect, Route, Switch, useHistory } from "../router";
+import { Link, Redirect, Route, Switch, useHistory } from "../Router";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 
