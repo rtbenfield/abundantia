@@ -25,11 +25,12 @@ jobs:
           SENTRY_DSN: https://f911c31ea80e475bb301cab5e2e59693@o291540.ingest.sentry.io/1533229
           SENTRY_ENVIRONMENT: production
 
-      - name: Publish static content
-        uses: actions/upload-artifact@v2
-        with:
-          name: site
-          path: public
+      # No need to publish artifact for now. GitHub free storage is pretty limited
+      # - name: Publish static content
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: site
+      #     path: public
 
       - name: Deploy to Firebase
         if: github.ref == 'refs/heads/master'
