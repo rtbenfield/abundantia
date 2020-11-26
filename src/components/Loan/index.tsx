@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
 import Typography from "@material-ui/core/Typography";
+import { withProfiler } from "@sentry/react";
 import * as React from "react";
 import { useParams } from "react-router-dom";
 import { useLoan } from "../../hooks/useLoans";
@@ -76,4 +77,4 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default Loan;
+export default withProfiler(Loan);

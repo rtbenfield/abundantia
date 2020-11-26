@@ -1,10 +1,11 @@
+import * as Sentry from "@sentry/react";
+
 export interface UseErrorCaptureResult {
   captureError(error: Error): void;
 }
 
 function captureError(error: Error) {
-  // TODO: capture error
-  console.error(error);
+  Sentry.captureException(error);
 }
 
 export function useErrorCapture(): UseErrorCaptureResult {

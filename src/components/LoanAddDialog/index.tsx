@@ -3,6 +3,7 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import { withProfiler } from "@sentry/react";
 import { useSnackbar } from "notistack";
 import * as React from "react";
 import { useErrorCapture } from "../../hooks/useErrorCapture";
@@ -54,4 +55,4 @@ const AddLoanDialog: React.FC<AddLoanDialogProps> = ({
   );
 };
 
-export default AddLoanDialog;
+export default withProfiler(AddLoanDialog);

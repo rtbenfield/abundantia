@@ -1,3 +1,4 @@
+import { withProfiler } from "@sentry/react";
 import * as React from "react";
 import EmailPassword from "./EmailPassword";
 import Register from "./Register";
@@ -24,4 +25,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default withProfiler(Login);

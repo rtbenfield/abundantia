@@ -2,6 +2,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
+import { withProfiler } from "@sentry/react";
 import * as React from "react";
 import { useParams } from "react-router-dom";
 import { useLoan } from "../../hooks/useLoans";
@@ -123,7 +124,7 @@ const Explore: React.FC = () => {
   }
 };
 
-export default Explore;
+export default withProfiler(Explore);
 
 const useStyles = makeStyles((theme) => ({
   comparison: {

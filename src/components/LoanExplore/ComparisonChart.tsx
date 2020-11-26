@@ -1,6 +1,7 @@
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import { useTheme } from "@material-ui/core/styles";
+import { withProfiler } from "@sentry/react";
 import * as React from "react";
 import {
   Line,
@@ -67,8 +68,11 @@ const ComparisonChart: React.FC<ComparisonChartProps> = ({
               borderRadius: theme.shape.borderRadius,
               boxShadow: theme.shadows[23],
             }}
-            cursor={{ stroke: theme.palette.divider }}
-            formatter={(value, name) => [currencyFormat.format(+value), name]}
+            cursor={{ stroke: theme.palette.divider, strokeDasharray: "" }}
+            formatter={(value: number | string, name: string) => [
+              currencyFormat.format(+value),
+              name,
+            ]}
             labelFormatter={(value) => dateFormat.format(new Date(value))}
             labelStyle={theme.typography.caption}
           />
@@ -99,7 +103,7 @@ const ComparisonChart: React.FC<ComparisonChartProps> = ({
   );
 };
 
-export default ComparisonChart;
+export default withProfiler(ComparisonChart);
 
 const colors: readonly string[] = [
   "#B48EAD",
