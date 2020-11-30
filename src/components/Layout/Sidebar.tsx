@@ -5,6 +5,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
 import AddIcon from "@material-ui/icons/Add";
 import clsx from "clsx";
 import * as React from "react";
@@ -25,7 +26,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onAddClick }) => {
     return (
       <Paper className={clsx(classes.root, className)} elevation={16} square>
         {isLoading ? (
-          <List>
+          <List className={classes.list}>
             <ListItem>
               <ListItemText
                 primary="xxxxxxx"
@@ -55,7 +56,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onAddClick }) => {
             </ListItem>
           </List>
         ) : (
-          <List>
+          <List className={classes.list}>
             {[...loans]
               .sort((a, b) => a.name.localeCompare(b.name))
               .map((l) => (
@@ -72,12 +73,23 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onAddClick }) => {
             </ListItem>
           </List>
         )}
+        <Divider />
+        <Typography
+          className={classes.version}
+          component="span"
+          variant="subtitle1"
+        >
+          Version {process.env.GITHUB_SHA || "DEVELOPMENT"}
+        </Typography>
       </Paper>
     );
   }
 };
 
 const useStyles = makeStyles((theme) => ({
+  list: {
+    flex: 1,
+  },
   listItemLoading: {
     display: "inline-block",
     backgroundColor: theme.palette.text.primary,
@@ -89,7 +101,12 @@ const useStyles = makeStyles((theme) => ({
     userSelect: "none",
   },
   root: {
+    display: "flex",
+    flexDirection: "column",
     zIndex: theme.zIndex.drawer,
+  },
+  version: {
+    margin: theme.spacing(),
   },
 }));
 
