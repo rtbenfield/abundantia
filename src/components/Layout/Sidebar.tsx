@@ -79,7 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onAddClick }) => {
           component="span"
           variant="subtitle1"
         >
-          Version {process.env.GITHUB_SHA || "DEVELOPMENT"}
+          Version {process.env.VERSION || "DEVELOPMENT"}
         </Typography>
       </Paper>
     );
