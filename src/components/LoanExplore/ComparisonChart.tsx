@@ -56,12 +56,14 @@ const ComparisonChart: React.FC<ComparisonChartProps> = ({
     });
   }, [baseScenario, field, scenarios]);
 
+  const colors = getColorGenerator();
   return (
-    <Card>
+    <Card style={{ overflow: "visible" }}>
       <CardHeader title={title} titleTypographyProps={{ variant: "h6" }} />
       <ResponsiveContainer height={240}>
         <LineChart data={data} syncId="explore">
           <Tooltip
+            allowEscapeViewBox={{ x: true, y: true }}
             contentStyle={{
               backgroundColor: theme.palette.background.paper,
               border: "none",
@@ -69,12 +71,12 @@ const ComparisonChart: React.FC<ComparisonChartProps> = ({
               boxShadow: theme.shadows[23],
             }}
             cursor={{ stroke: theme.palette.divider, strokeDasharray: "" }}
-            formatter={(value: number | string, name: string) => [
-              currencyFormat.format(+value),
-              name,
-            ]}
+            formatter={(value: number | string, name: string) =>
+              [currencyFormat.format(+value), name] as any
+            }
             labelFormatter={(value) => dateFormat.format(new Date(value))}
             labelStyle={theme.typography.caption}
+            wrapperStyle={{ zIndex: theme.zIndex.tooltip }}
           />
           <XAxis dataKey="date" hide />
           <YAxis domain={[0, "dataMax"]} hide type="number" />
@@ -83,20 +85,23 @@ const ComparisonChart: React.FC<ComparisonChartProps> = ({
             dataKey="base"
             dot={false}
             name="Base"
-            stroke={colors[0]}
+            stroke={colors.next().value}
           />
-          {scenarios.map((s, i) => {
-            return (
-              <Line
-                activeDot={{ stroke: "none" }}
-                dataKey={`scenario${i}`}
-                dot={false}
-                name={s.name}
-                key={s.id}
-                stroke={colors[(i + 1) % colors.length]}
-              />
-            );
-          })}
+          {scenarios
+            .slice()
+            .sort(sortScenarios)
+            .map((s, i) => {
+              return (
+                <Line
+                  activeDot={{ stroke: "none" }}
+                  dataKey={`scenario${i}`}
+                  dot={false}
+                  name={s.name}
+                  key={s.id}
+                  stroke={colors.next().value}
+                />
+              );
+            })}
         </LineChart>
       </ResponsiveContainer>
     </Card>
@@ -105,17 +110,28 @@ const ComparisonChart: React.FC<ComparisonChartProps> = ({
 
 export default withProfiler(ComparisonChart, { name: "ComparisonChart" });
 
-const colors: readonly string[] = [
-  "#B48EAD",
-  "#D08770",
-  "#A3BE8C",
-  "#EBCB8B",
-  "#8FBCBB",
-  "#88C0D0",
-  "#88C0D0",
-  "#5E81AC",
-  "#BF616A",
-];
+function* getColorGenerator(): Generator<string, never, void> {
+  while (true) {
+    yield "#B48EAD";
+    yield "#D08770";
+    yield "#A3BE8C";
+    yield "#EBCB8B";
+    yield "#8FBCBB";
+    yield "#88C0D0";
+    yield "#5E81AC";
+    yield "#BF616A";
+  }
+}
+
+function sortScenarios(a: Scenario, b: Scenario): number {
+  if (a.name === "Base") {
+    return -1;
+  } else if (b.name === "Base") {
+    return 1;
+  } else {
+    return a.name.localeCompare(b.name);
+  }
+}
 
 const currencyFormat = new Intl.NumberFormat("en-US", {
   currency: "USD",
