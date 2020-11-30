@@ -12,8 +12,6 @@ jobs:
   build:
     name: Build and Deploy
     runs-on: ubuntu-latest
-    env:
-      VERSION: ${GITHUB_SHA::8}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2

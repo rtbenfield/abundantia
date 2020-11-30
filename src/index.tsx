@@ -25,7 +25,7 @@ Sentry.init({
       routingInstrumentation: Sentry.reactRouterV5Instrumentation(history),
     }),
   ],
-  release: process.env.VERSION,
+  release: process.env.GITHUB_SHA,
   tracesSampleRate: 1,
 });
 

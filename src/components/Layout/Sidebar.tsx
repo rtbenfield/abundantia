@@ -77,9 +77,10 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onAddClick }) => {
         <Typography
           className={classes.version}
           component="span"
+          title={`Version ${process.env.GITHUB_SHA || "DEVELOPMENT"}`}
           variant="subtitle1"
         >
-          Version {process.env.VERSION || "DEVELOPMENT"}
+          Version {(process.env.GITHUB_SHA || "LOCAL").substr(0, 8)}
         </Typography>
       </Paper>
     );
