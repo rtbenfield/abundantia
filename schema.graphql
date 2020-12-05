@@ -1,0 +1,68 @@
+type Loan
+  @auth(
+    query: {
+      rule: """
+      query ($SID: String!) {
+        queryLoan(filter: { owner: { eq: $SID } } ) {
+          id
+        }
+      }
+      """
+    }
+    add: {
+      rule: """
+      query ($SID: String!) {
+        queryLoan(filter: { owner: { eq: $SID } } ) {
+          id
+        }
+      }
+      """
+    }
+    delete: {
+      rule: """
+      query ($SID: String!) {
+        queryLoan(filter: { owner: { eq: $SID } } ) {
+          id
+        }
+      }
+      """
+    }
+    update: {
+      rule: """
+      query ($SID: String!) {
+        queryLoan(filter: { owner: { eq: $SID } } ) {
+          id
+        }
+      }
+      """
+    }
+  ) {
+  id: ID!
+  loanAmount: Float!
+  name: String!
+  owner: String! @search(by: [hash])
+  periodInterestRate: Float!
+  periods: Int!
+  periodType: PeriodType!
+  scenarios: [Scenario!]!
+  startDate: DateTime!
+}
+
+enum PeriodType {
+  Monthly
+}
+
+type Scenario {
+  additionalPayments: [ScenarioPayment!]!
+  id: ID!
+  name: String!
+}
+
+type ScenarioPayment {
+  from: DateTime!
+  id: ID!
+  principalAmount: Float!
+  to: DateTime
+}
+
+# Dgraph.Authorization {"Algo": "RS256","Audience": ["60A41Bdl96M1U3tC54ZYMfpUcfNrezH5"],"Header": "Authorization","Namespace": "https://dgraph.io/jwt/claims","VerificationKey":"-----BEGIN CERTIFICATE-----\nMIIDETCCAfmgAwIBAgIJEVx9FqPV+pwdMA0GCSqGSIb3DQEBCwUAMCYxJDAiBgNV\nBAMTG2FidW5kYW50aWEtZGV2LnVzLmF1dGgwLmNvbTAeFw0yMDEyMDUxNDQ4MDBa\nFw0zNDA4MTQxNDQ4MDBaMCYxJDAiBgNVBAMTG2FidW5kYW50aWEtZGV2LnVzLmF1\ndGgwLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOTdGU899uZI\n0Zgy3RSeRul8NMVOtic+rWR4lxZ7iz8jIL0wmS6E4yJ1fov1BJmdiPunkoGTjPXH\n5+GDmFAl2PBtO98pcBGWaszKdnxZh1gm5Bfq9l/OZmfQe3CB3kTW+oqsWfsAWFAI\nzyJiZrUTGZSHW+oV86JdlrkTizPewMU6STnDLFtVmRbX9Q/bTybbv1rgqwguEXIO\nzEjH2OUwC+H6YckHv3/bRmPn/NEUhKlWCaTJxRjcAHrEqhvsy4r6873Ds/MNTPJ6\npfk4hAECAlaKDKe3SLdgUOErDzJ3wypVG2bUQzOroiB7jUfx257L8zBa7wASsp86\nxQRG7JuhE2ECAwEAAaNCMEAwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUX5EI\nqFIRubGkny5MQDKIghHyv/IwDgYDVR0PAQH/BAQDAgKEMA0GCSqGSIb3DQEBCwUA\nA4IBAQCtzaKFs53zf3GMpc3RwQpkLMmyHwJEeCMiqEosgmOfNIMilyztlSjOB6E9\ndbCMkUpXDQO1oSVwVuM/0RnSXSy5FctefnqrvsP7AsQFtTzHOGrGE+GK51w2tAW/\npddCAunLI35GU/Gl+cWx/2T+nYfpxUrDziDW4dFOcGRd0+oHaJSB5vTWGf8Q3meP\nfBRcQXGSIW0QtqFDv74Y0mdr5vBQaOKHq3dyinJRk2trnILMVjHUeUvnz1XS5SkU\n42BGFNBNs8mNt+J2RM2b6xXBnDIrEpEIlYkrsb4gCBY65cwi6J1tUynB2x5JFua0\nTyteeUE0yJQUx2n/24Us0EtvIdsj\n-----END CERTIFICATE-----"}

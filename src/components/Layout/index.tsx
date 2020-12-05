@@ -2,7 +2,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { makeStyles } from "@material-ui/core/styles";
 import * as React from "react";
-import { useHistory } from "../Router";
+import { Redirect, Route, Switch, useHistory } from "../Router";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 
@@ -51,13 +51,13 @@ const Layout: React.FC = () => {
           onAddClick={() => setAddOpen(true)}
         />
         <main className={classes.content}>
-          {/* <React.Suspense fallback={<PageLoading />}>
+          <React.Suspense fallback={<PageLoading />}>
             <Switch>
               <Route component={Home} exact path="/" />
               <Route component={Loan} path="/loans/:id" />
               <Redirect to="/" />
             </Switch>
-            <Route path="/loans/:id/explore">
+            {/* <Route path="/loans/:id/explore">
               {({ match }) => (
                 <Dialog
                   fullScreen
@@ -83,8 +83,8 @@ const Layout: React.FC = () => {
                   <LoanExplore />
                 </Dialog>
               )}
-            </Route>
-          </React.Suspense> */}
+            </Route> */}
+          </React.Suspense>
         </main>
         <React.Suspense fallback={null}>
           <LoanAddDialog

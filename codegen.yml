@@ -1,0 +1,17 @@
+overwrite: true
+schema: "https://abundantia.us-west-2.aws.cloud.dgraph.io/graphql"
+documents: "src/**/*.graphql"
+generates:
+  src/types.generated.ts:
+    - typescript
+  src/:
+    preset: near-operation-file
+    presetConfig:
+      baseTypesPath: types.generated.ts
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-react-apollo
+  # ./graphql.schema.json:
+  #   plugins:
+  #     - "introspection"

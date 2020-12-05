@@ -1,6 +1,11 @@
-import firebase from "firebase/app";
-import { useEffect, useReducer } from "react";
-import { useUser } from "./useUser";
+import { useAuth0 } from "@auth0/auth0-react";
+import {
+  LoanFieldsFragmentDoc,
+  useAddLoanMutation,
+  useDeleteLoanMutation,
+  useGetAllLoansQuery,
+  useUpdateLoanMutation,
+} from "./useLoans.generated";
 
 export interface Loan {
   readonly id: string;
@@ -22,52 +27,6 @@ export interface Loan {
 export enum PeriodType {
   Monthly = "Monthly",
 }
-
-export type Actions =
-  | { type: "fetch" }
-  | { loans: readonly Loan[]; type: "success" }
-  | { error: Error; type: "error" }
-  | { type: "reset" };
-
-const defaultValue: UseLoansResult = {
-  error: null,
-  isLoading: true,
-  loans: [],
-};
-
-function reducer(state: UseLoansResult, action: Actions): UseLoansResult {
-  switch (action.type) {
-    case "error":
-      return { error: action.error, isLoading: false, loans: [] };
-    case "fetch":
-      return { error: null, isLoading: true, loans: state.loans };
-    case "reset":
-      return defaultValue;
-    case "success":
-      return { error: null, isLoading: false, loans: action.loans };
-  }
-}
-
-const converter: firebase.firestore.FirestoreDataConverter<Loan> = {
-  fromFirestore(snapshot, options) {
-    const data = snapshot.data(options)!;
-    return {
-      id: snapshot.id,
-      loanAmount: data.loanAmount,
-      name: data.name,
-      periodInterestRate: data.periodInterestRate,
-      periods: data.periods,
-      periodType: data.periodType,
-      startDate: data.startDate.toDate(),
-    };
-  },
-  toFirestore(modelObject: Loan) {
-    return {
-      ...modelObject,
-      startDate: firebase.firestore.Timestamp.fromDate(modelObject.startDate),
-    };
-  },
-};
 
 export interface UseLoanResult {
   error: Error | null;
@@ -109,51 +68,71 @@ export interface UseLoanActionsResult {
   updateLoan(id: string, changes: LoanUpdateModel): Promise<void>;
 }
 
-const createConverter: firebase.firestore.FirestoreDataConverter<LoanCreateModel> = {
-  fromFirestore(snapshot, options) {
-    const data = snapshot.data(options)!;
-    return {
-      loanAmount: data.loanAmount,
-      name: data.name,
-      periodInterestRate: data.periodInterestRate,
-      periodType: data.periodType,
-      periods: data.periods,
-      startDate: data.startDate.toDate(),
-    };
-  },
-  toFirestore(modelObject: LoanCreateModel) {
-    return {
-      ...modelObject,
-      startDate: firebase.firestore.Timestamp.fromDate(modelObject.startDate),
-    };
-  },
-};
-
 export function useLoanActions(): UseLoanActionsResult {
-  const user = useUser();
-
-  const loanStore = firebase
-    .firestore()
-    .collection(`users/${user?.uid}/loans`)
-    .withConverter(createConverter);
-
-  async function createLoan(loan: LoanCreateModel): Promise<string> {
-    const d = await loanStore.add(loan);
-    return d.id;
-  }
-
-  function deleteLoan(id: string): Promise<void> {
-    return loanStore.doc(id).delete();
-  }
-
-  function updateLoan(id: string, changes: LoanUpdateModel): Promise<void> {
-    return loanStore.doc(id).update(changes);
-  }
+  const { user } = useAuth0();
+  const [createLoan] = useAddLoanMutation({
+    update(cache, { data }) {
+      const newLoans = data?.addLoan?.loan ?? [];
+      const newLoanRefs = newLoans
+        .filter((x): x is Exclude<typeof x, null> => Boolean(x))
+        .map((x) =>
+          cache.writeFragment({
+            data: x,
+            fragment: LoanFieldsFragmentDoc,
+          }),
+        );
+      cache.modify({
+        fields: {
+          queryLoan(existingLoans = []) {
+            return [...existingLoans, ...newLoanRefs];
+          },
+        },
+      });
+    },
+  });
+  const [deleteLoan] = useDeleteLoanMutation({
+    update(cache, { data }) {
+      const removedLoans = data?.deleteLoan?.loan ?? [];
+      removedLoans
+        .filter((x): x is Exclude<typeof x, null> => Boolean(x))
+        .map((x) => cache.identify(x))
+        .forEach((ref) => cache.evict({ id: ref }));
+      cache.gc();
+    },
+  });
+  const [updateLoan] = useUpdateLoanMutation();
 
   return {
-    createLoan,
-    deleteLoan,
-    updateLoan,
+    async createLoan(loan) {
+      const { data } = await createLoan({
+        variables: {
+          loan: {
+            ...loan,
+            owner: user.sub,
+            scenarios: [],
+          },
+        },
+      });
+      const id = data?.addLoan?.loan?.map((x) => x?.id)[0];
+      if (!id) {
+        throw new Error("Failed to create loan");
+      } else {
+        return id;
+      }
+    },
+    async deleteLoan(id) {
+      await deleteLoan({
+        variables: { id },
+      });
+    },
+    async updateLoan(id, changes) {
+      await updateLoan({
+        variables: {
+          changes,
+          id,
+        },
+      });
+    },
   };
 }
 
@@ -164,30 +143,18 @@ export interface UseLoansResult {
 }
 
 export function useLoans(): UseLoansResult {
-  const user = useUser();
-  const [state, dispatch] = useReducer(reducer, defaultValue);
-  useEffect(() => {
-    if (user) {
-      dispatch({ type: "fetch" });
-      const loanStore = firebase
-        .firestore()
-        .collection(`users/${user.uid}/loans`)
-        .withConverter(converter);
-      const unsubscribe = loanStore.onSnapshot(
-        (response) => {
-          const data = response.docs.map<Loan>((x) => x.data());
-          console.info("useLoans data", data);
-          dispatch({ loans: data, type: "success" });
-        },
-        (err) => {
-          dispatch({ error: err, type: "error" });
-        },
-      );
-      return unsubscribe;
-    } else {
-      dispatch({ type: "reset" });
-      return undefined;
-    }
-  }, [user]);
-  return state;
+  const { data, error = null, loading: isLoading } = useGetAllLoansQuery();
+  const loans = (data?.queryLoan ?? [])
+    .filter((x): x is Exclude<typeof x, null> => Boolean(x))
+    .map<Loan>((x) => {
+      return {
+        ...x,
+        startDate: new Date(x?.startDate),
+      };
+    });
+  return {
+    error,
+    isLoading,
+    loans,
+  };
 }

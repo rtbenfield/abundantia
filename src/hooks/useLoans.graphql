@@ -1,0 +1,39 @@
+query GetAllLoans {
+  queryLoan {
+    ...LoanFields
+  }
+}
+
+mutation AddLoan($loan: AddLoanInput!) {
+  addLoan(input: [$loan]) {
+    loan {
+      ...LoanFields
+    }
+  }
+}
+
+mutation DeleteLoan($id: ID!) {
+  deleteLoan(filter: { id: [$id] }) {
+    loan {
+      ...LoanFields
+    }
+  }
+}
+
+mutation UpdateLoan($id: ID!, $changes: LoanPatch!) {
+  updateLoan(input: { filter: { id: [$id] }, set: $changes }) {
+    loan {
+      ...LoanFields
+    }
+  }
+}
+
+fragment LoanFields on Loan {
+  id
+  loanAmount
+  name
+  periodInterestRate
+  periods
+  periodType
+  startDate
+}

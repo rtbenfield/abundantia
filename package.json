@@ -9,9 +9,11 @@
   },
   "scripts": {
     "build": "parcel build ./src/index.html --out-dir ./public",
-    "start": "parcel ./src/index.html"
+    "start": "parcel ./src/index.html",
+    "codegen": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
+    "@apollo/client": "^3.3.4",
     "@auth0/auth0-react": "^1.2.0",
     "@date-io/core": "^1.x",
     "@date-io/luxon": "^1.x",
@@ -23,6 +25,7 @@
     "@sentry/tracing": "^5.27.6",
     "clsx": "^1.1.0",
     "firebase": "^8.0.1",
+    "graphql": "^15.4.0",
     "luxon": "^1.23.0",
     "notistack": "^1.0.1",
     "prop-types": "^15.6.0",
@@ -34,6 +37,12 @@
     "recharts": "^1.8.5"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "1.19.4",
+    "@graphql-codegen/introspection": "1.18.1",
+    "@graphql-codegen/near-operation-file-preset": "^1.17.13",
+    "@graphql-codegen/typescript": "1.19.0",
+    "@graphql-codegen/typescript-operations": "1.17.12",
+    "@graphql-codegen/typescript-react-apollo": "2.2.1",
     "@types/luxon": "^1.22.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",

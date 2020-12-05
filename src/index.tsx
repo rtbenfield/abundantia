@@ -1,4 +1,11 @@
-import { Auth0Provider } from "@auth0/auth0-react";
+import {
+  ApolloClient,
+  ApolloProvider,
+  createHttpLink,
+  InMemoryCache,
+} from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
+import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import LuxonUtils from "@date-io/luxon";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import * as Sentry from "@sentry/react";
@@ -42,23 +49,52 @@ firebase.initializeApp({
 });
 firebase.performance();
 
+const AuthorizedApolloProvider: React.FC = ({ children }) => {
+  const { getIdTokenClaims } = useAuth0();
+
+  const authLink = setContext(async (_, { headers }) => {
+    const token = await getIdTokenClaims();
+    return {
+      headers: {
+        ...headers,
+        Authorization: token.__raw,
+      },
+    };
+  });
+
+  const httpLink = createHttpLink({
+    credentials: "same-origin",
+    uri: "https://abundantia.us-west-2.aws.cloud.dgraph.io/graphql",
+  });
+
+  const client = new ApolloClient({
+    cache: new InMemoryCache(),
+    connectToDevTools: true,
+    link: authLink.concat(httpLink),
+  });
+
+  return <ApolloProvider client={client}>{children}</ApolloProvider>;
+};
+
 const App: React.FC = () => {
   return (
-    <Auth0Provider
-      domain="abundantia-dev.us.auth0.com"
-      clientId="60A41Bdl96M1U3tC54ZYMfpUcfNrezH5"
-      redirectUri={window.location.origin}
-    >
-      <Router history={history}>
-        <ThemeProvider>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
-            <ErrorBoundary>
-              <Layout />
-            </ErrorBoundary>
-          </MuiPickersUtilsProvider>
-        </ThemeProvider>
-      </Router>
-    </Auth0Provider>
+    <Router history={history}>
+      <Auth0Provider
+        domain="abundantia-dev.us.auth0.com"
+        clientId="60A41Bdl96M1U3tC54ZYMfpUcfNrezH5"
+        redirectUri={window.location.origin}
+      >
+        <AuthorizedApolloProvider>
+          <ThemeProvider>
+            <MuiPickersUtilsProvider utils={LuxonUtils}>
+              <ErrorBoundary>
+                <Layout />
+              </ErrorBoundary>
+            </MuiPickersUtilsProvider>
+          </ThemeProvider>
+        </AuthorizedApolloProvider>
+      </Auth0Provider>
+    </Router>
   );
 };
 
