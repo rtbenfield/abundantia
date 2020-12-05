@@ -1,24 +1,19 @@
+import { useAuth0 } from "@auth0/auth0-react";
 import AppBar from "@material-ui/core/AppBar";
 import IconButton from "@material-ui/core/IconButton";
 import { makeStyles } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import firebase from "firebase/app";
 import * as React from "react";
-import { useUser } from "../../hooks/useUser";
 
 interface NavbarProps {
   className?: string;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ className }) => {
+  const { logout, user } = useAuth0();
   const classes = useStyles();
-  const user = useUser();
-
-  async function handleSignOut() {
-    await firebase.auth().signOut();
-  }
 
   return (
     <AppBar className={className} position="relative">
@@ -26,15 +21,25 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
         <Typography
           className={classes.title}
           color="inherit"
+          component="span"
           noWrap
           variant="h6"
         >
           Abundantia
         </Typography>
         {user && (
-          <IconButton color="inherit" onClick={handleSignOut} title="Sign out">
-            <ExitToAppIcon />
-          </IconButton>
+          <>
+            <Typography color="inherit" component="span" noWrap variant="body1">
+              {user.name}
+            </Typography>
+            <IconButton
+              color="inherit"
+              onClick={() => logout()}
+              title="Sign out"
+            >
+              <ExitToAppIcon />
+            </IconButton>
+          </>
         )}
       </Toolbar>
     </AppBar>

@@ -1,3 +1,4 @@
+import { Auth0Provider } from "@auth0/auth0-react";
 import LuxonUtils from "@date-io/luxon";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import * as Sentry from "@sentry/react";
@@ -43,15 +44,21 @@ firebase.performance();
 
 const App: React.FC = () => {
   return (
-    <Router history={history}>
-      <ThemeProvider>
-        <MuiPickersUtilsProvider utils={LuxonUtils}>
-          <ErrorBoundary>
-            <Layout />
-          </ErrorBoundary>
-        </MuiPickersUtilsProvider>
-      </ThemeProvider>
-    </Router>
+    <Auth0Provider
+      domain="abundantia-dev.us.auth0.com"
+      clientId="60A41Bdl96M1U3tC54ZYMfpUcfNrezH5"
+      redirectUri={window.location.origin}
+    >
+      <Router history={history}>
+        <ThemeProvider>
+          <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <ErrorBoundary>
+              <Layout />
+            </ErrorBoundary>
+          </MuiPickersUtilsProvider>
+        </ThemeProvider>
+      </Router>
+    </Auth0Provider>
   );
 };
 

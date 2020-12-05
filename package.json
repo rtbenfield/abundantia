@@ -12,6 +12,7 @@
     "start": "parcel ./src/index.html"
   },
   "dependencies": {
+    "@auth0/auth0-react": "^1.2.0",
     "@date-io/core": "^1.x",
     "@date-io/luxon": "^1.x",
     "@material-ui/core": "^4.9.11",
@@ -40,8 +41,7 @@
     "@types/react-router-dom": "^5.1.4",
     "@types/recharts": "^1.8.10",
     "eslint": "^7.8.0",
-    "parcel-bundler": "^1.12.4",
-    "parcel-plugin-bundle-visualiser": "^1.2.0",
+    "parcel": "^2.0.0-beta.1",
     "prettier": "^2.0.5",
     "typescript": "^4.0.2"
   },

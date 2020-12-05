@@ -66,6 +66,7 @@ node_modules/
 
 # Parcel cache
 .cache
+.parcel-cache
 
 # Output directories
 dist

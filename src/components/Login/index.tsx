@@ -1,27 +1,31 @@
+import { useAuth0 } from "@auth0/auth0-react";
+import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
 import { withProfiler } from "@sentry/react";
 import * as React from "react";
-import EmailPassword from "./EmailPassword";
-import Register from "./Register";
-import ResetPassword from "./ResetPassword";
 
 const Login: React.FC = () => {
-  const [mode, setMode] = React.useState<"email" | "reset" | "register">(
-    "email",
-  );
-
+  const { loginWithRedirect } = useAuth0();
   return (
-    <>
-      <EmailPassword
-        onForgotPassword={() => setMode("reset")}
-        onRegister={() => setMode("register")}
-        open={mode === "email"}
-      />
-      <Register onCancel={() => setMode("email")} open={mode === "register"} />
-      <ResetPassword
-        onCancel={() => setMode("email")}
-        open={mode === "reset"}
-      />
-    </>
+    <Dialog open>
+      <DialogTitle>Login</DialogTitle>
+      <DialogContent>
+        <DialogContentText>Click below to login</DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          color="primary"
+          onClick={() => loginWithRedirect()}
+          variant="contained"
+        >
+          Login
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

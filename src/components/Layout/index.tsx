@@ -1,14 +1,8 @@
-import AppBar from "@material-ui/core/AppBar";
+import { useAuth0 } from "@auth0/auth0-react";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import Dialog from "@material-ui/core/Dialog";
-import IconButton from "@material-ui/core/IconButton";
 import { makeStyles } from "@material-ui/core/styles";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import CloseIcon from "@material-ui/icons/Close";
 import * as React from "react";
-import { useUser } from "../../hooks/useUser";
-import { Link, Redirect, Route, Switch, useHistory } from "../Router";
+import { useHistory } from "../Router";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 
@@ -35,14 +29,14 @@ const PageLoading: React.FC = () => {
 };
 
 const Layout: React.FC = () => {
+  const { isAuthenticated, isLoading } = useAuth0();
   const history = useHistory();
-  const user = useUser();
   const classes = useStyles();
   const [addOpen, setAddOpen] = React.useState(false);
 
-  if (user === undefined) {
+  if (isLoading) {
     return <PageLoading />;
-  } else if (user === null) {
+  } else if (!isAuthenticated) {
     return (
       <React.Suspense fallback={<PageLoading />}>
         <Login />
@@ -57,7 +51,7 @@ const Layout: React.FC = () => {
           onAddClick={() => setAddOpen(true)}
         />
         <main className={classes.content}>
-          <React.Suspense fallback={<PageLoading />}>
+          {/* <React.Suspense fallback={<PageLoading />}>
             <Switch>
               <Route component={Home} exact path="/" />
               <Route component={Loan} path="/loans/:id" />
@@ -90,7 +84,7 @@ const Layout: React.FC = () => {
                 </Dialog>
               )}
             </Route>
-          </React.Suspense>
+          </React.Suspense> */}
         </main>
         <React.Suspense fallback={null}>
           <LoanAddDialog
