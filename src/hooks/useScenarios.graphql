@@ -1,0 +1,46 @@
+query LoanScenarios($loanId: ID!) {
+  queryScenario(filter: { has: loan }) {
+    ...ScenarioFields
+    loan(filter: { id: [$loanId] }) {
+      id
+    }
+  }
+}
+
+mutation AddScenario($scenario: AddScenarioInput!) {
+  addScenario(input: [$scenario]) {
+    scenario {
+      ...ScenarioFields
+    }
+  }
+}
+
+mutation DeleteScenario($loanId: ID!, $scenarioId: ID!) {
+  deleteScenario(filter: { id: [$scenarioId], has: loan }) {
+    scenario {
+      ...ScenarioFields
+      loan(filter: { id: [$loanId] }) {
+        id
+      }
+    }
+  }
+}
+
+mutation UpdateScenario($id: ID!, $changes: ScenarioPatch!) {
+  updateScenario(input: { filter: { id: [$id] }, set: $changes }) {
+    scenario {
+      ...ScenarioFields
+    }
+  }
+}
+
+fragment ScenarioFields on Scenario {
+  additionalPayments {
+    from
+    id
+    principalAmount
+    to
+  }
+  id
+  name
+}

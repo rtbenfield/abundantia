@@ -52,13 +52,60 @@ enum PeriodType {
   Monthly
 }
 
-type Scenario {
+type Scenario
+  @auth(
+    query: {
+      rule: """
+      query ($SID: String!) {
+        queryScenario(filter: { has: loan }) {
+          loan(filter: { owner: { eq: $SID } }) {
+            id
+          }
+        }
+      }
+      """
+    }
+    add: {
+      rule: """
+      query ($SID: String!) {
+        queryScenario {
+          loan(filter: { owner: { eq: $SID } }) {
+            id
+          }
+        }
+      }
+      """
+    }
+    delete: {
+      rule: """
+      query ($SID: String!) {
+        queryScenario {
+          loan(filter: { owner: { eq: $SID } }) {
+            id
+          }
+        }
+      }
+      """
+    }
+    update: {
+      rule: """
+      query ($SID: String!) {
+        queryScenario {
+          loan(filter: { owner: { eq: $SID } }) {
+            id
+          }
+        }
+      }
+      """
+    }
+  ) {
   additionalPayments: [ScenarioPayment!]!
   id: ID!
+  loan: Loan! @hasInverse(field: "scenarios")
   name: String!
 }
 
-type ScenarioPayment {
+type ScenarioPayment @generate(query: { get: false, query: false }) {
   from: DateTime!
   id: ID!
   principalAmount: Float!

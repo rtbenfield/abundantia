@@ -1,6 +1,10 @@
-import firebase from "firebase/app";
-import { useEffect, useReducer } from "react";
-import { useUser } from "./useUser";
+import {
+  ScenarioFieldsFragmentDoc,
+  useAddScenarioMutation,
+  useDeleteScenarioMutation,
+  useLoanScenariosQuery,
+  useUpdateScenarioMutation,
+} from "./useScenarios.generated";
 
 export interface Scenario {
   readonly additionalPayments: readonly ScenarioPayment[];
@@ -13,34 +17,6 @@ export interface ScenarioPayment {
   readonly id: string;
   readonly principalAmount: number;
   readonly to: Date | null;
-}
-
-export type Actions =
-  | { type: "fetch" }
-  | { scenarios: readonly Scenario[]; type: "success" }
-  | { error: Error; type: "error" }
-  | { type: "reset" };
-
-const defaultValue: UseScenariosResult = {
-  error: null,
-  isLoading: true,
-  scenarios: [],
-};
-
-function reducer(
-  state: UseScenariosResult,
-  action: Actions,
-): UseScenariosResult {
-  switch (action.type) {
-    case "error":
-      return { error: action.error, isLoading: false, scenarios: [] };
-    case "fetch":
-      return { error: null, isLoading: true, scenarios: state.scenarios };
-    case "reset":
-      return defaultValue;
-    case "success":
-      return { error: null, isLoading: false, scenarios: action.scenarios };
-  }
 }
 
 export interface ScenarioCreateModel {
@@ -63,99 +39,86 @@ export interface UseScenarioActionsResult {
   ): Promise<void>;
 }
 
-const createConverter: firebase.firestore.FirestoreDataConverter<ScenarioCreateModel> = {
-  fromFirestore(snapshot, options) {
-    const data = snapshot.data(options)!;
-    return {
-      additionalPayments: (data.additionalPayments as any[]).map<
-        ScenarioPayment
-      >((x) => {
-        return {
-          from: x.from.toDate(),
-          id: Math.random().toString(),
-          principalAmount: x.principalAmount,
-          to: x.to?.toDate() ?? null,
-        };
-      }),
-      name: data.name,
-    };
-  },
-  toFirestore(modelObject: ScenarioCreateModel) {
-    return {
-      additionalPayments: modelObject.additionalPayments.map((x) => {
-        return {
-          from: firebase.firestore.Timestamp.fromDate(x.from),
-          principalAmount: x.principalAmount,
-          to: x.to ? firebase.firestore.Timestamp.fromDate(x.to) : null,
-        };
-      }),
-      name: modelObject.name,
-    };
-  },
-};
-
-const converter: firebase.firestore.FirestoreDataConverter<Scenario> = {
-  fromFirestore(snapshot, options) {
-    const data = snapshot.data(options)!;
-    return {
-      additionalPayments: (data.additionalPayments as any[]).map<
-        ScenarioPayment
-      >((x) => {
-        return {
-          from: x.from.toDate(),
-          id: Math.random().toString(),
-          principalAmount: x.principalAmount,
-          to: x.to?.toDate() ?? null,
-        };
-      }),
-      id: snapshot.id,
-      name: data.name,
-    };
-  },
-  toFirestore(modelObject: Scenario) {
-    return {
-      additionalPayments: modelObject.additionalPayments.map((x) => {
-        return {
-          from: firebase.firestore.Timestamp.fromDate(x.from),
-          principalAmount: x.principalAmount,
-          to: x.to ? firebase.firestore.Timestamp.fromDate(x.to) : null,
-        };
-      }),
-      name: modelObject.name,
-    };
-  },
-};
-
 export function useScenarioActions(loanId: string): UseScenarioActionsResult {
-  const user = useUser();
-
-  const scenarioStore = firebase
-    .firestore()
-    .collection(`users/${user?.uid}/loans/${loanId}/scenarios`)
-    .withConverter(createConverter);
-
-  async function createScenario(
-    scenario: ScenarioCreateModel,
-  ): Promise<string> {
-    const d = await scenarioStore.add(scenario);
-    return d.id;
-  }
-
-  function deleteScenario(id: string): Promise<void> {
-    return scenarioStore.doc(id).delete();
-  }
-
-  function updateScenario(
-    id: string,
-    changes: ScenarioCreateModel,
-  ): Promise<void> {
-    return scenarioStore.doc(id).update(changes);
-  }
+  const [createScenario] = useAddScenarioMutation({
+    update(cache, { data }) {
+      const newScenarios = data?.addScenario?.scenario ?? [];
+      const newScenarioRefs = newScenarios
+        .filter((x): x is Exclude<typeof x, null> => Boolean(x))
+        .map((x) =>
+          cache.writeFragment({
+            data: x,
+            fragment: ScenarioFieldsFragmentDoc,
+            variables: { loanId },
+          }),
+        );
+      cache.modify({
+        fields: {
+          queryScenario(existingScenarios = []) {
+            return [...existingScenarios, ...newScenarioRefs];
+          },
+        },
+      });
+    },
+  });
+  const [deleteScenario] = useDeleteScenarioMutation({
+    update(cache, { data }) {
+      const removedScenarios = data?.deleteScenario?.scenario ?? [];
+      removedScenarios
+        .filter((x): x is Exclude<typeof x, null> => Boolean(x))
+        .map((x) => cache.identify(x))
+        .forEach((ref) => cache.evict({ id: ref }));
+      cache.gc();
+    },
+  });
+  const [updateScenario] = useUpdateScenarioMutation();
 
   return {
-    createScenario,
-    deleteScenario,
-    updateScenario,
+    async createScenario(scenario) {
+      const { data } = await createScenario({
+        variables: {
+          scenario: {
+            ...scenario,
+            additionalPayments: scenario.additionalPayments.map((x) => {
+              return {
+                from: x.from,
+                principalAmount: x.principalAmount,
+                to: x.to ?? null,
+              };
+            }),
+            loan: { id: loanId },
+          },
+        },
+      });
+      const id = data?.addScenario?.scenario?.map((x) => x?.id)[0];
+      if (!id) {
+        throw new Error("Failed to create scenario");
+      } else {
+        return id;
+      }
+    },
+    async deleteScenario(scenarioId) {
+      await deleteScenario({
+        variables: { loanId, scenarioId },
+      });
+    },
+    async updateScenario(scenarioId, changes) {
+      await updateScenario({
+        variables: {
+          changes: {
+            ...changes,
+            additionalPayments: changes.additionalPayments.map((x) => {
+              return {
+                from: x.from,
+                principalAmount: x.principalAmount,
+                to: x.to ?? null,
+              };
+            }),
+          },
+          id: scenarioId,
+        },
+      });
+    },
   };
 }
 
@@ -166,30 +129,26 @@ export interface UseScenariosResult {
 }
 
 export function useScenarios(loanId: string): UseScenariosResult {
-  const user = useUser();
-  const [state, dispatch] = useReducer(reducer, defaultValue);
-  useEffect(() => {
-    if (user) {
-      dispatch({ type: "fetch" });
-      const unsubscribe = firebase
-        .firestore()
-        .collection(`users/${user.uid}/loans/${loanId}/scenarios`)
-        .withConverter(converter)
-        .onSnapshot(
-          (response) => {
-            const data = response.docs.map<Scenario>((x) => x.data());
-            console.info("useScenarios data", data);
-            dispatch({ scenarios: data, type: "success" });
-          },
-          (err) => {
-            dispatch({ error: err, type: "error" });
-          },
-        );
-      return unsubscribe;
-    } else {
-      dispatch({ type: "reset" });
-      return undefined;
-    }
-  }, [user]);
-  return state;
+  const { data, error = null, loading: isLoading } = useLoanScenariosQuery({
+    variables: { loanId },
+  });
+  const scenarios = (data?.queryScenario ?? [])
+    .filter((x): x is Exclude<typeof x, null> => Boolean(x))
+    .map<Scenario>((x) => {
+      return {
+        ...x,
+        additionalPayments: x.additionalPayments.map((y) => {
+          return {
+            ...y,
+            from: y.from,
+            to: y.to ? y.to : null,
+          };
+        }),
+      };
+    });
+  return {
+    error,
+    isLoading,
+    scenarios,
+  };
 }

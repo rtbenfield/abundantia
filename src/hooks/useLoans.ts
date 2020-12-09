@@ -146,12 +146,7 @@ export function useLoans(): UseLoansResult {
   const { data, error = null, loading: isLoading } = useGetAllLoansQuery();
   const loans = (data?.queryLoan ?? [])
     .filter((x): x is Exclude<typeof x, null> => Boolean(x))
-    .map<Loan>((x) => {
-      return {
-        ...x,
-        startDate: new Date(x?.startDate),
-      };
-    });
+    .map<Loan>((x) => x);
   return {
     error,
     isLoading,

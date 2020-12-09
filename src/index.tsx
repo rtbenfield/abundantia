@@ -10,11 +10,6 @@ import LuxonUtils from "@date-io/luxon";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
-import "firebase/analytics";
-import firebase from "firebase/app";
-import "firebase/auth";
-import "firebase/firestore";
-import "firebase/performance";
 import { createBrowserHistory } from "history";
 import * as React from "react";
 import { render } from "react-dom";
@@ -37,20 +32,36 @@ Sentry.init({
   tracesSampleRate: 1,
 });
 
-firebase.initializeApp({
-  apiKey: "AIzaSyB9Ed9FL223yYKfwTLpT43n1MJ_TcnyzbU",
-  authDomain: "abundantia-io.firebaseapp.com",
-  databaseURL: "https://abundantia-io.firebaseio.com",
-  projectId: "abundantia-io",
-  storageBucket: "abundantia-io.appspot.com",
-  messagingSenderId: "175120670657",
-  appId: "1:175120670657:web:9d9e8c0dff64f9db9b5940",
-  measurementId: "G-HZN9PN91NL",
-});
-firebase.performance();
-
 const AuthorizedApolloProvider: React.FC = ({ children }) => {
   const { getIdTokenClaims } = useAuth0();
+
+  const cache = new InMemoryCache({
+    typePolicies: {
+      Loan: {
+        fields: {
+          startDate: {
+            read(existing) {
+              return new Date(existing);
+            },
+          },
+        },
+      },
+      ScenarioPayment: {
+        fields: {
+          from: {
+            read(existing) {
+              return new Date(existing);
+            },
+          },
+          to: {
+            read(existing) {
+              return new Date(existing);
+            },
+          },
+        },
+      },
+    },
+  });
 
   const authLink = setContext(async (_, { headers }) => {
     const token = await getIdTokenClaims();
@@ -68,7 +79,7 @@ const AuthorizedApolloProvider: React.FC = ({ children }) => {
   });
 
   const client = new ApolloClient({
-    cache: new InMemoryCache(),
+    cache,
     connectToDevTools: true,
     link: authLink.concat(httpLink),
   });
