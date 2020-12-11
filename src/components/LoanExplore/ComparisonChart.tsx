@@ -1,137 +1,186 @@
-import Card from "@material-ui/core/Card";
-import CardHeader from "@material-ui/core/CardHeader";
-import { useTheme } from "@material-ui/core/styles";
+import { fade, makeStyles, useTheme } from "@material-ui/core/styles";
 import { withProfiler } from "@sentry/react";
+import { curveNatural } from "@visx/curve";
+import { localPoint } from "@visx/event";
+import { scaleLinear, scaleTime } from "@visx/scale";
+import { Line, LinePath } from "@visx/shape";
+import { defaultStyles, useTooltip, useTooltipInPortal } from "@visx/tooltip";
+import { extent, max } from "d3-array";
 import * as React from "react";
-import {
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import {
-  AmortizationPayment,
-  makeAmortizationSchedule,
-} from "../../components/Loan/utils";
+import { AmortizationPayment } from "../../components/Loan/utils";
 import { Loan } from "../../hooks/useLoans";
 import { Scenario } from "../../hooks/useScenarios";
 
 interface ComparisonChartProps {
-  field: keyof AmortizationPayment;
+  field: Exclude<keyof AmortizationPayment, "date" | "paymentNumber">;
   loan: Loan;
-  scenarios: readonly Scenario[];
-  title: string;
+  scenarios: readonly ScenarioSeries[];
+  size: {
+    readonly height: number;
+    readonly width: number;
+  };
 }
+
+export interface ScenarioSeries {
+  readonly color: string;
+  readonly payments: readonly AmortizationPayment[];
+  readonly scenario: Scenario;
+}
+
+interface ScenarioTooltip {
+  readonly color: string;
+  readonly payment: AmortizationPayment;
+  readonly scenario: Scenario;
+}
+
+const useStyles = makeStyles((theme) => ({
+  tooltip: {
+    ...defaultStyles,
+    backgroundColor: fade(theme.palette.background.default, 0.92),
+    borderRadius: theme.shape.borderRadius,
+    color: theme.typography.body1.color,
+    padding: theme.spacing(1, 2),
+    zIndex: theme.zIndex.tooltip,
+  },
+  tooltipLine: {
+    stroke: theme.palette.primary.main,
+  },
+}));
 
 const ComparisonChart: React.FC<ComparisonChartProps> = ({
   field,
   loan,
   scenarios,
-  title,
+  size: { height, width },
 }) => {
   const theme = useTheme();
-  const baseScenario = React.useMemo(() => {
-    return makeAmortizationSchedule(loan);
-  }, [loan]);
-  const data = React.useMemo(() => {
-    const amortization = scenarios.map((s) =>
-      makeAmortizationSchedule(loan, {
-        additionalPayments: s.additionalPayments,
-      }),
-    );
-    return baseScenario.map((base, i) => {
-      const dateScenarios = Object.fromEntries(
-        amortization.map((s, si) => [
-          `scenario${si}`,
-          s[i].balance > 0 ? s[i][field] : null,
-        ]),
-      );
-      return {
-        base: base[field],
-        date: base.date.getTime(),
-        ...dateScenarios,
-      };
-    });
-  }, [baseScenario, field, scenarios]);
+  const classes = useStyles();
+  const margin = { top: theme.spacing() };
 
-  const colors = getColorGenerator();
+  const [minDate = loan.startDate, maxDate = loan.startDate] = extent(
+    scenarios.flatMap(({ payments }) => payments),
+    (x) => x.date,
+  );
+  const xScale = scaleTime({
+    domain: [minDate, maxDate],
+    range: [0, width],
+  });
+  const yScale = scaleLinear({
+    domain: [
+      0,
+      max(
+        scenarios.flatMap(({ payments }) => payments),
+        (x) => x[field],
+      ) ?? 0,
+    ],
+    range: [height, margin.top],
+  });
+
+  const { containerRef, TooltipInPortal } = useTooltipInPortal({
+    detectBounds: true,
+    scroll: true,
+  });
+  const {
+    hideTooltip,
+    showTooltip,
+    tooltipData,
+    tooltipLeft,
+    tooltipOpen,
+    tooltipTop,
+  } = useTooltip<readonly ScenarioTooltip[]>();
+
+  const lastFrameRef = React.useRef<number>(0);
+  function handlePointerMove(event: React.PointerEvent<SVGSVGElement>) {
+    const point = localPoint(event);
+    if (point) {
+      window.cancelAnimationFrame(lastFrameRef.current);
+      lastFrameRef.current = window.requestAnimationFrame(() => {
+        const cursorDate = xScale.invert(point.x);
+        const newTooltipData = scenarios
+          .map<ScenarioTooltip | null>(({ color, payments, scenario }) => {
+            const payment = payments.find(
+              (x) =>
+                x.date.getMonth() === cursorDate.getMonth() &&
+                x.date.getFullYear() === cursorDate.getFullYear(),
+            );
+            return payment ? { color, payment, scenario } : null;
+          })
+          .filter((x): x is Exclude<typeof x, null> => x !== null);
+        showTooltip({
+          tooltipLeft: point.x,
+          tooltipTop: point.y,
+          tooltipData: newTooltipData,
+        });
+      });
+    }
+  }
+  function handlePointerLeave() {
+    window.cancelAnimationFrame(lastFrameRef.current);
+    hideTooltip();
+  }
+
   return (
-    <Card style={{ overflow: "visible" }}>
-      <CardHeader title={title} titleTypographyProps={{ variant: "h6" }} />
-      <ResponsiveContainer height={240}>
-        <LineChart data={data} syncId="explore">
-          <Tooltip
-            allowEscapeViewBox={{ x: true, y: true }}
-            contentStyle={{
-              backgroundColor: theme.palette.background.paper,
-              border: "none",
-              borderRadius: theme.shape.borderRadius,
-              boxShadow: theme.shadows[23],
-            }}
-            cursor={{ stroke: theme.palette.divider, strokeDasharray: "" }}
-            formatter={(value: number | string, name: string) =>
-              [currencyFormat.format(+value), name] as any
-            }
-            labelFormatter={(value) => dateFormat.format(new Date(value))}
-            labelStyle={theme.typography.caption}
-            wrapperStyle={{ zIndex: theme.zIndex.tooltip }}
-          />
-          <XAxis dataKey="date" hide />
-          <YAxis domain={[0, "dataMax"]} hide type="number" />
+    <svg
+      height={height}
+      onPointerLeave={handlePointerLeave}
+      onPointerMove={handlePointerMove}
+      ref={containerRef}
+      width={width}
+    >
+      {tooltipOpen && (
+        <>
+          <TooltipInPortal
+            className={classes.tooltip}
+            left={tooltipLeft}
+            top={tooltipTop}
+            unstyled
+          >
+            <table>
+              {typeof tooltipLeft === "number" && (
+                <caption>
+                  {dateFormat.format(xScale.invert(tooltipLeft))}
+                </caption>
+              )}
+              <tbody>
+                {tooltipData?.map(({ color, scenario, payment }) => (
+                  <tr key={scenario.id} style={{ color }}>
+                    <th scope="row">{scenario.name}</th>
+                    <td>{currencyFormat.format(payment[field])}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </TooltipInPortal>
           <Line
-            activeDot={{ stroke: "none" }}
-            dataKey="base"
-            dot={false}
-            name="Base"
-            stroke={colors.next().value}
+            className={classes.tooltipLine}
+            from={{ x: tooltipLeft, y: 0 }}
+            pointerEvents="none"
+            strokeWidth={2}
+            to={{ x: tooltipLeft, y: height + margin.top }}
           />
-          {scenarios
-            .slice()
-            .sort(sortScenarios)
-            .map((s, i) => {
-              return (
-                <Line
-                  activeDot={{ stroke: "none" }}
-                  dataKey={`scenario${i}`}
-                  dot={false}
-                  name={s.name}
-                  key={s.id}
-                  stroke={colors.next().value}
-                />
-              );
-            })}
-        </LineChart>
-      </ResponsiveContainer>
-    </Card>
+        </>
+      )}
+      {scenarios.map(({ color, payments, scenario }) => {
+        return (
+          <LinePath<AmortizationPayment>
+            curve={curveNatural}
+            // LinePath expects a mutable array, but doesn't actually mutate it
+            data={payments as AmortizationPayment[]}
+            key={scenario.id}
+            x={(d) => xScale(d.date)}
+            y={(d) => yScale(d[field])}
+            stroke={color}
+            fill="transparent"
+          />
+        );
+      })}
+    </svg>
   );
 };
 
-export default withProfiler(ComparisonChart, { name: "ComparisonChart" });
-
-function* getColorGenerator(): Generator<string, never, void> {
-  while (true) {
-    yield "#B48EAD";
-    yield "#D08770";
-    yield "#A3BE8C";
-    yield "#EBCB8B";
-    yield "#8FBCBB";
-    yield "#88C0D0";
-    yield "#5E81AC";
-    yield "#BF616A";
-  }
-}
-
-function sortScenarios(a: Scenario, b: Scenario): number {
-  if (a.name === "Base") {
-    return -1;
-  } else if (b.name === "Base") {
-    return 1;
-  } else {
-    return a.name.localeCompare(b.name);
-  }
-}
+export default withProfiler(ComparisonChart, {
+  name: "ComparisonChart",
+});
 
 const currencyFormat = new Intl.NumberFormat("en-US", {
   currency: "USD",
@@ -139,8 +188,7 @@ const currencyFormat = new Intl.NumberFormat("en-US", {
 });
 
 const dateFormat = new Intl.DateTimeFormat("en-US", {
-  day: "numeric",
-  month: "numeric",
+  month: "short",
   timeZone: "UTC",
   year: "numeric",
 });

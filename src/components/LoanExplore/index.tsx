@@ -11,7 +11,7 @@ import {
   useScenarioActions,
   useScenarios,
 } from "../../hooks/useScenarios";
-import ComparisonChart from "./ComparisonChart";
+import ComparisonGrid from "./ComparisonGrid";
 import EditScenarioForm from "./EditScenarioForm";
 import Scenarios from "./Scenarios";
 
@@ -71,47 +71,9 @@ const Explore: React.FC = () => {
             scenarios={scenarios}
           />
         </Paper>
-        {editScenario === null && (
-          <div className={classes.comparison}>
-            <ComparisonChart
-              field="balance"
-              loan={loan}
-              scenarios={scenarios}
-              title="Balance"
-            />
-            <ComparisonChart
-              field="amount"
-              loan={loan}
-              scenarios={scenarios}
-              title="Payment Amount"
-            />
-            <ComparisonChart
-              field="interest"
-              loan={loan}
-              scenarios={scenarios}
-              title="Interest Per Payment"
-            />
-            <ComparisonChart
-              field="principal"
-              loan={loan}
-              scenarios={scenarios}
-              title="Principal Per Payment"
-            />
-            <ComparisonChart
-              field="interestToDate"
-              loan={loan}
-              scenarios={scenarios}
-              title="Total Interest Paid"
-            />
-            <ComparisonChart
-              field="principalToDate"
-              loan={loan}
-              scenarios={scenarios}
-              title="Total Principal Paid"
-            />
-          </div>
-        )}
-        {editScenario !== null && (
+        {editScenario === null ? (
+          <ComparisonGrid loan={loan} scenarios={scenarios} />
+        ) : (
           <EditScenarioForm
             key={editScenario}
             onCancel={() => setEditScenario(null)}
@@ -129,15 +91,13 @@ export default withProfiler(Explore, { name: "Explore" });
 const useStyles = makeStyles((theme) => ({
   comparison: {
     display: "grid",
+    gridAutoRows: "min-content",
     gridGap: theme.spacing(),
     gridTemplateColumns: "1fr",
-    gridTemplateRows:
-      "min-content min-content min-content min-content min-content min-content",
     padding: theme.spacing(2),
     overflow: "auto",
     [theme.breakpoints.up("md")]: {
       gridTemplateColumns: "1fr 1fr",
-      gridTemplateRows: "min-content min-content min-content",
     },
   },
   root: {
