@@ -66,6 +66,7 @@ const Explore: React.FC = () => {
           <Scenarios
             loan={loan}
             onAddScenario={handleAddScenario}
+            onEditCancel={() => setEditScenario(null)}
             onEditScenario={(s) => setEditScenario(s.id)}
             onRemoveScenario={handleRemoveScenario}
             scenarios={scenarios}

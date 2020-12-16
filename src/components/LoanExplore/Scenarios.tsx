@@ -16,6 +16,7 @@ interface ScenarioProps {
   className?: string;
   loan: Loan;
   onAddScenario(): void;
+  onEditCancel(): void;
   onEditScenario(scenario: Scenario): void;
   onRemoveScenario(id: string): void;
   scenarios: readonly Scenario[];
@@ -24,6 +25,7 @@ interface ScenarioProps {
 const Scenarios: React.FC<ScenarioProps> = ({
   loan,
   onAddScenario,
+  onEditCancel,
   onEditScenario,
   onRemoveScenario,
   scenarios,
@@ -53,7 +55,7 @@ const Scenarios: React.FC<ScenarioProps> = ({
 
   return (
     <List {...props}>
-      <ListItem>
+      <ListItem button onClick={() => onEditCancel()}>
         <ListItemText
           primary="Base"
           secondary={`${currencyFormat.format(baseInterest)} interest`}
