@@ -19,7 +19,7 @@ interface ComparisonGridProps {
 
 const useStyles = makeStyles((theme) => ({
   cardContent: {
-    height: theme.spacing(40),
+    height: theme.spacing(30),
     position: "relative",
   },
   cardHeader: {
