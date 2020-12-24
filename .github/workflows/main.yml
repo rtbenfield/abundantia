@@ -19,11 +19,11 @@ jobs:
       - name: Restore dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Run Parcel build
-        run: parcel build ./src/index.html --out-dir ./public --no-autoinstall
+      - name: Run Snowpack build
+        run: snowpack build
         env:
-          SENTRY_DSN: https://f911c31ea80e475bb301cab5e2e59693@o291540.ingest.sentry.io/1533229
-          SENTRY_ENVIRONMENT: production
+          SNOWPACK_PUBLIC_SENTRY_DSN: https://f911c31ea80e475bb301cab5e2e59693@o291540.ingest.sentry.io/1533229
+          SNOWPACK_PUBLIC_SENTRY_ENVIRONMENT: production
 
       # No need to publish artifact for now. GitHub free storage is pretty limited
       # - name: Publish static content

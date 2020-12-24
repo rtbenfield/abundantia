@@ -18,14 +18,14 @@ import ThemeProvider from "./components/ThemeProvider";
 const history = createBrowserHistory();
 
 Sentry.init({
-  dsn: process.env.SENTRY_DSN,
-  environment: process.env.SENTRY_ENVIRONMENT,
+  dsn: import.meta.env.SNOWPACK_PUBLIC_SENTRY_DSN,
+  environment: import.meta.env.SNOWPACK_PUBLIC_SENTRY_ENVIRONMENT,
   integrations: [
     new Integrations.BrowserTracing({
       routingInstrumentation: Sentry.reactRouterV5Instrumentation(history),
     }),
   ],
-  release: process.env.GITHUB_SHA,
+  release: import.meta.env.SNOWPACK_PUBLIC_GITHUB_SHA,
   tracesSampleRate: 1,
 });
 
@@ -58,3 +58,9 @@ const App: React.FC = () => {
 const SentryApp = Sentry.withProfiler(App);
 
 render(<SentryApp />, document.getElementById("root"));
+
+// Hot Module Replacement (HMR) - Remove this snippet to remove HMR.
+// Learn more: https://snowpack.dev/concepts/hot-module-replacement
+if (import.meta.hot) {
+  import.meta.hot.accept();
+}
