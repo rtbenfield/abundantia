@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { Loan } from "../../hooks/useLoans";
+import type { Loan } from "../../hooks/useLoans";
 
 export interface AmortizationPayment {
   readonly amount: number;

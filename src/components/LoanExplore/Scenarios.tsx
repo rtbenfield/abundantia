@@ -9,8 +9,8 @@ import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
 import * as React from "react";
 import { makeAmortizationSchedule } from "../../components/Loan/utils";
-import { Loan } from "../../hooks/useLoans";
-import { Scenario } from "../../hooks/useScenarios";
+import type { Loan } from "../../hooks/useLoans";
+import type { Scenario } from "../../hooks/useScenarios";
 
 interface ScenarioProps {
   className?: string;

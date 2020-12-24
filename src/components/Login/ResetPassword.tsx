@@ -5,7 +5,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
 import Alert from "@material-ui/lab/Alert";
-import { auth } from "firebase/app";
+import firebase from "firebase/app";
 import * as React from "react";
 
 interface EmailPasswordProps {
@@ -26,7 +26,7 @@ const EmailPassword: React.FC<EmailPasswordProps> = ({ onCancel, open }) => {
     if (!sent) {
       try {
         // TODO: Somehow this is kicking back to the login page, but the user gets the email
-        await auth().sendPasswordResetEmail(email);
+        await firebase.auth().sendPasswordResetEmail(email);
         setSent(true);
       } catch (e) {
         setError(e);
@@ -35,8 +35,8 @@ const EmailPassword: React.FC<EmailPasswordProps> = ({ onCancel, open }) => {
       }
     } else {
       try {
-        await auth().confirmPasswordReset(code, password);
-        await auth().signInWithEmailAndPassword(email, password);
+        await firebase.auth().confirmPasswordReset(code, password);
+        await firebase.auth().signInWithEmailAndPassword(email, password);
       } catch (e) {
         setError(e);
         setPending(false);

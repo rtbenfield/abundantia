@@ -11,7 +11,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import ExploreIcon from "@material-ui/icons/Explore";
 import * as React from "react";
 import { Link, useRouteMatch } from "react-router-dom";
-import { Loan } from "../../hooks/useLoans";
+import type { Loan } from "../../hooks/useLoans";
 
 interface LoanInfoCardProps {
   loan: Loan | null;

@@ -12,7 +12,7 @@ import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
 import { DatePicker } from "@material-ui/pickers";
 import * as React from "react";
-import {
+import type {
   Scenario,
   ScenarioCreateModel,
   ScenarioPaymentCreateModel,

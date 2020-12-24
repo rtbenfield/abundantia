@@ -7,9 +7,9 @@ import { Line, LinePath } from "@visx/shape";
 import { defaultStyles, useTooltip, useTooltipInPortal } from "@visx/tooltip";
 import { extent, max } from "d3-array";
 import * as React from "react";
-import { AmortizationPayment } from "../../components/Loan/utils";
-import { Loan } from "../../hooks/useLoans";
-import { Scenario } from "../../hooks/useScenarios";
+import type { AmortizationPayment } from "../../components/Loan/utils";
+import type { Loan } from "../../hooks/useLoans";
+import type { Scenario } from "../../hooks/useScenarios";
 
 interface ComparisonChartProps {
   field: Exclude<keyof AmortizationPayment, "date" | "paymentNumber">;
