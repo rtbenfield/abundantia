@@ -78,12 +78,12 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onAddClick }) => {
           className={classes.version}
           component="span"
           title={`Version ${
-            import.meta.env.SNOWPACK_PUBLIC_GITHUB_SHA || "DEVELOPMENT"
+            import.meta.env.SNOWPACK_PUBLIC_VERSION || "LOCAL"
           }`}
           variant="subtitle1"
         >
           Version{" "}
-          {(import.meta.env.SNOWPACK_PUBLIC_GITHUB_SHA || "LOCAL").substr(0, 8)}
+          {(import.meta.env.SNOWPACK_PUBLIC_VERSION || "LOCAL").substr(0, 8)}
         </Typography>
       </Paper>
     );

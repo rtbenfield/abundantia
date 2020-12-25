@@ -25,7 +25,7 @@ Sentry.init({
       routingInstrumentation: Sentry.reactRouterV5Instrumentation(history),
     }),
   ],
-  release: import.meta.env.SNOWPACK_PUBLIC_GITHUB_SHA,
+  release: import.meta.env.SNOWPACK_PUBLIC_VERSION,
   tracesSampleRate: 1,
 });
 
