@@ -7,7 +7,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
 import * as React from "react";
-import { Loan } from "../../hooks/useLoans";
+import type { Loan } from "../../hooks/useLoans";
 import { makeAmortizationSchedule } from "./utils";
 
 interface AmortizationTableProps {

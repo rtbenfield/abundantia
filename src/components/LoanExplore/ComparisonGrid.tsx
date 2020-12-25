@@ -8,8 +8,8 @@ import {
   AmortizationPayment,
   makeAmortizationSchedule,
 } from "../../components/Loan/utils";
-import { Loan } from "../../hooks/useLoans";
-import { Scenario } from "../../hooks/useScenarios";
+import type { Loan } from "../../hooks/useLoans";
+import type { Scenario } from "../../hooks/useScenarios";
 import ComparisonChart, { ScenarioSeries } from "./ComparisonChart";
 
 interface ComparisonGridProps {

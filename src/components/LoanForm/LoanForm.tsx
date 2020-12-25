@@ -2,7 +2,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import TextField from "@material-ui/core/TextField";
 import { DatePicker } from "@material-ui/pickers";
 import * as React from "react";
-import { UseLoanFormResult } from "./useLoanForm";
+import type { UseLoanFormResult } from "./useLoanForm";
 
 interface LoanFormProps {
   loanForm: UseLoanFormResult;
