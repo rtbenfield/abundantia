@@ -1,9 +1,9 @@
-name: Production CI/CD
+name: Snowpack CI/CD
 
 on:
   push:
     branches:
-      - master
+      - snowpack
 
 jobs:
   build:
@@ -34,4 +34,4 @@ jobs:
         with:
           firebaseServiceAccount: "${{ secrets.FIREBASE_TOKEN }}"
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
-          channelId: live
+          channelId: snowpack
