@@ -1,0 +1,24 @@
+{
+  "short_name": "Abundantia",
+  "name": "Abundantia",
+  "description": "Track your loans and explore options for paying them off faster with Abundantia.",
+  "lang": "English",
+  "icons": [
+    {
+      "src": "/images/icons-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/images/icons-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "scope": "/",
+  "background_color": "#2E3440",
+  "theme_color": "#81A1C1",
+  "shortcuts": []
+}
