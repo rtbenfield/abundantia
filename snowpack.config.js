@@ -13,7 +13,6 @@ module.exports = {
   optimize: {
     bundle: true,
     minify: true,
-    treeshake: true,
   },
   packageOptions: {
     /* ... */
