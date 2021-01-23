@@ -1,4 +1,5 @@
-/** @type {import("snowpack").SnowpackUserConfig } */
+// @ts-check
+/** @type {import("snowpack").SnowpackUserConfig} */
 module.exports = {
   mount: {
     public: { url: "/", static: true },
@@ -10,8 +11,10 @@ module.exports = {
     { match: "routes", src: ".*", dest: "/index.html" },
   ],
   optimize: {
-    /* Example: Bundle your final build: */
-    // "bundle": true,
+    bundle: true,
+    minify: true,
+    splitting: true,
+    treeshake: true,
   },
   packageOptions: {
     /* ... */
