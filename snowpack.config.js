@@ -13,7 +13,6 @@ module.exports = {
   optimize: {
     bundle: true,
     minify: true,
-    splitting: true,
     treeshake: true,
   },
   packageOptions: {
