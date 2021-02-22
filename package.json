@@ -18,7 +18,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.50",
     "@material-ui/pickers": "^3.2.10",
-    "@sentry/react": "^5.30.0",
+    "@sentry/react": "^6.2.0",
     "@sentry/tracing": "^5.30.0",
     "@types/d3-array": "^2.8.0",
     "@visx/curve": "^1.0.0",
