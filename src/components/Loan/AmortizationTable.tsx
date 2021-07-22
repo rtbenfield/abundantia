@@ -94,8 +94,8 @@ const AmortizationTable: React.FC<AmortizationTableProps> = ({ loan }) => {
               nextIconButtonProps={{
                 "aria-label": "next page",
               }}
-              onChangePage={(_, v) => setPage(v)}
-              onChangeRowsPerPage={(e) => {
+              onPageChange={(_, v) => setPage(v)}
+              onRowsPerPageChange={(e) => {
                 setRowsPerPage(+e.target.value);
                 setPage(0);
               }}
