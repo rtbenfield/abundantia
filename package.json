@@ -31,7 +31,7 @@
     "@visx/tooltip": "^1.1.0",
     "clsx": "^1.1.0",
     "d3-array": "^2.9.1",
-    "firebase": "^8.2.3",
+    "firebase": "^9.0.2",
     "luxon": "^1.23.0",
     "notistack": "^1.0.1",
     "prop-types": "^15.6.0",
