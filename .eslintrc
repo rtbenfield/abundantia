@@ -1,0 +1,9 @@
+{
+  "extends": [
+    "@remix-run/eslint-config",
+    "@remix-run/eslint-config/node"
+  ],
+  "rules": {
+    "jsx-a11y/anchor-has-content": 0,
+  }
+}

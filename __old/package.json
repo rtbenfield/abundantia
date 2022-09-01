@@ -1,0 +1,62 @@
+{
+  "name": "abundantia",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": {
+    "email": "rtbenfield@gmail.com",
+    "name": "Tyler Benfield",
+    "url": "https://tylerbenfield.me"
+  },
+  "scripts": {
+    "start": "snowpack dev",
+    "build": "snowpack build",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
+    "lint": "prettier --check \"src/**/*.{js,jsx,ts,tsx}\""
+  },
+  "dependencies": {
+    "@date-io/core": "^1.x",
+    "@date-io/luxon": "^1.x",
+    "@material-ui/core": "^4.9.11",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.50",
+    "@material-ui/pickers": "^3.2.10",
+    "@sentry/react": "^6.0.0",
+    "@sentry/tracing": "^6.0.0",
+    "@types/d3-array": "^2.8.0",
+    "@visx/curve": "^1.0.0",
+    "@visx/event": "^1.0.0",
+    "@visx/responsive": "^1.1.0",
+    "@visx/scale": "^1.1.0",
+    "@visx/shape": "^1.4.0",
+    "@visx/tooltip": "^1.1.0",
+    "clsx": "^1.1.0",
+    "d3-array": "^2.9.1",
+    "firebase": "^8.2.3",
+    "luxon": "^1.23.0",
+    "notistack": "^1.0.1",
+    "prop-types": "^15.6.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-ga": "^3.1.2",
+    "react-router": "^5.1.2",
+    "react-router-dom": "^5.1.2"
+  },
+  "devDependencies": {
+    "@snowpack/plugin-react-refresh": "^2.3.9",
+    "@snowpack/plugin-typescript": "^1.1.1",
+    "@types/luxon": "^1.25.1",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "@types/react-router": "^5.1.5",
+    "@types/react-router-dom": "^5.1.4",
+    "@types/snowpack-env": "^2.3.2",
+    "eslint": "^7.8.0",
+    "prettier": "^2.0.5",
+    "snowpack": "~3.0.11",
+    "typescript": "^4.0.2"
+  },
+  "alias": {
+    "react-dom$": "react-dom/profiling",
+    "scheduler/tracing": "scheduler/tracing-profiling"
+  }
+}

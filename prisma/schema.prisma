@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "cockroachdb"
+  url      = env("DATABASE_URL")
+}
+
+model Loan {
+  id                 String     @id @default(uuid())
+  loanAmount         Int
+  name               String
+  periodInterestRate Decimal
+  periods            Int
+  periodType         PeriodType
+  startDate          DateTime
+  userId             String
+  scenarios          Scenario[]
+
+  @@index([userId])
+}
+
+model Scenario {
+  id       String            @id @default(uuid())
+  loan     Loan              @relation(fields: [loanId], references: [id])
+  loanId   String
+  name     String
+  payments ScenarioPayment[]
+
+  @@index([loanId])
+}
+
+model ScenarioPayment {
+  id              String    @id @default(uuid())
+  from            DateTime
+  principalAmount Int
+  scenario        Scenario  @relation(fields: [scenarioId], references: [id])
+  scenarioId      String
+  to              DateTime?
+
+  @@index([scenarioId])
+}
+
+enum PeriodType {
+  Monthly
+}
